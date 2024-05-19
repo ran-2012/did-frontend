@@ -1,0 +1,25 @@
+.tile {
+    width: 35px;
+    height: 35px;
+    background-color: #1a1a1a;
+    text-align: center;
+    border-color: #4477d7;
+    margin: 3px;
+    border-radius: 5px;
+    user-select: none;
+    font-size: 20px;
+    vertical-align: middle;
+    display: flex;
+}
+
+.tile:hover {
+    transform: scale(1.1, 1.1);
+}
+
+.field {
+    vertical-align: middle;
+}
+
+.tile-text{
+    margin: auto;
+}
