@@ -171,8 +171,8 @@ class Field extends Component<FieldParam, FieldState> {
     render() {
         console.log("render")
         return (
-            <div className='field'>
-                <button onClick={() => this.reset()} style={{marginBottom: '1em'}}>Reset</button>
+            <div className='d-flex flex-column'>
+                <button className='align-self-center' onClick={() => this.reset()} style={{marginBottom: '1em'}}>Reset</button>
                 <div>
                     <div style={{display: "inline-block"}}>
                         {this.renderField()}

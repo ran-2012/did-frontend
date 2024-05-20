@@ -14,9 +14,11 @@ class Mine extends Component<Param, State> {
 
     render() {
         return (
-            <center>
-                <Field x={10} y={10} mineCount={10}/>
-            </center>
+            <div className='h-100 w-100 d-flex'>
+                <div className='m-auto'>
+                    <Field x={10} y={10} mineCount={10}/>
+                </div>
+            </div>
         );
     }
 }

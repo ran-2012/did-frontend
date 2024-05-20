@@ -2,7 +2,8 @@ import {useRouteError} from 'react-router-dom'
 import {Link} from 'react-router-dom'
 
 function Error() {
-    const error = useRouteError();
+    const error = useRouteError() as { [key: string]: string | null };
+
     return (
         <div className='vh-100 d-flex'>
             <div className='m-auto'>

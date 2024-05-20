@@ -1,34 +1,48 @@
-import {config} from "../wagmi/config.ts";
-
-import 'bootstrap/dist/css/bootstrap.min.css';
+import {toast} from 'react-toastify'
 import {Button} from "react-bootstrap";
-import {signMessage} from '@wagmi/core'
+import KeyValueList, {ItemParam} from "../component/KeyValueList.tsx";
+import {convertKvList, createTestCredential} from "../veramo/utility.ts";
+import {useAccount, useSignMessage} from "wagmi";
+import {useMascaApi} from "../masca/utility.ts";
 
 function Index() {
+    const account = useAccount();
+    const mascaApi = useMascaApi();
+    const {isConnected} = account;
+
+    let items: ItemParam[] = [];
 
     async function testSign() {
+        console.log(account);
+        const obj = convertKvList(items);
+        console.log(JSON.stringify(obj));
         try {
-            const res = await signMessage(config, {
-                message: "test message"
+            console.log("mascaApi: " + mascaApi)
+            await mascaApi?.createCredential({
+                minimalUnsignedCredential: createTestCredential()
             })
-            console.log(res)
-
         } catch (e) {
             console.log(e);
         }
     }
 
+    function toastTest() {
+        toast('Toast test')
+    }
+
     return (
-        <center>
-            <Button className='m-1' onClick={testSign}>
+        <div className='d-flex flex-column m-2'>
+            <Button className='m-auto' onClick={toastTest}>Toast</Button>
+            <Button className='m-auto' onClick={testSign} disabled={!isConnected}>
                 Sign test
             </Button>
-            <div className="card">
-                <p>
-                    Edit <code>src/App.tsx</code> and save to test HMR
-                </p>
+            <div className='flex-grow-1 m-auto'>
+                <KeyValueList onListUpdate={(newItems) => {
+                    items = newItems
+                }}/>
+
             </div>
-        </center>
+        </div>
     )
 }
 

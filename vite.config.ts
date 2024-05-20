@@ -6,6 +6,12 @@ export default defineConfig(({command, mode}) => {
     process.env = {...process.env, ...loadEnv(mode, process.cwd(), '')}
 
     return {
-        plugins: [react()]
+        plugins: [react()],
+        server:{
+            watch: {
+                usePolling: true
+            }
+        }
+
     }
 })
