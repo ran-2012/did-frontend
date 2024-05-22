@@ -45,11 +45,11 @@ async function connectMasca(address: Hex) {
     }
 }
 
-function useMascaApi() {
-    return masca.api;
+function useMasca() {
+    return masca;
 }
 
 export {
     connectMasca,
-    useMascaApi
+    useMasca
 }

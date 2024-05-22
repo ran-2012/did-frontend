@@ -1,8 +1,8 @@
-import {toast} from 'react-toastify'
-import {Component, ReactNode, useEffect, useState} from "react";
+import {ReactNode, useEffect, useRef, useState} from "react";
 import {useAccount} from "wagmi";
 import {connectMasca} from "../masca/utility.ts";
 import {MascaApi} from "@blockchain-lab-um/masca-connector";
+import toast from "../toast.ts";
 
 interface Param {
     children: ReactNode
@@ -20,13 +20,13 @@ function MascaProvider(param: Param) {
                 if (isConnected && account.address) {
                     setMascaApi(await connectMasca(account.address))
                 }
-                toast('Connected to Masca')
+                toast.success('Connected to Masca')
             } catch (e) {
                 console.log(e);
-                toast('Failed to connect Masca')
+                toast.error('Failed to connect Masca')
             }
         })
-    }, [address]);
+    }, [isConnected, address]);
 
     return (
         <>{param.children}</>
