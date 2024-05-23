@@ -34,9 +34,21 @@ function getDid(method: string, address: string) {
     return `did:${method}:${address}`
 }
 
+function formatAddress(address: string) {
+    return `${address.slice(0, 5)}...${address.slice(-4)}`
+}
+
+function formatDid(did: string){
+    const seg = did.split(':')
+    seg[seg.length - 1] = formatAddress(seg[seg.length - 1])
+    return seg.join(':')
+}
+
 export {
     convertKvList,
     createTestCredential,
-    getDid
+    getDid,
+    formatAddress,
+    formatDid
 }
 

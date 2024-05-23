@@ -1,11 +1,12 @@
 import {Button} from "react-bootstrap";
 import KeyValueList, {ItemParam} from "../component/KeyValueList.tsx";
-import {convertKvList, createTestCredential, getDid} from "../veramo/utility.ts";
-import {useAccount, useSignMessage} from "wagmi";
+import {createTestCredential, getDid} from "../veramo/utility.ts";
+import {useAccount} from "wagmi";
 import {useMasca} from "../masca/utility.ts";
 import toast from "../toast.ts";
 import {useEffect, useState} from "react";
 import {isSuccess} from "@blockchain-lab-um/masca-connector";
+import {VerifiableCredential} from "@veramo/core";
 
 function exampleItemList() {
     const result: ItemParam[] = []
@@ -37,12 +38,17 @@ function Index() {
         try {
             console.log("mascaApi: " + masca.api)
             toast.info("Requesting signing")
-            const vc = await masca.api?.createCredential({
+            const res = await masca.api?.createCredential({
                 minimalUnsignedCredential: createTestCredential(itemList)
             })
 
-            if (vc && isSuccess(vc)) {
-                console.log(vc.data);
+            if (res && isSuccess(res)) {
+                const vc = res.data as VerifiableCredential;
+
+                // TODO: delete saving to local storage
+                localStorage.setItem("VC-TEST", JSON.stringify(vc))
+
+                console.log(res.data);
                 toast.success("Signing succeeded")
             } else {
                 toast.error("Failed to sign")
@@ -54,17 +60,8 @@ function Index() {
         }
     }
 
-    function onItemListChange() {
-        setItemList(itemList)
-    }
-
-    function toastTest() {
-        toast('Toast test')
-    }
-
     return (
         <div className='d-flex flex-column m-2'>
-            <Button className='mb-2 m-auto' onClick={toastTest}>Toast</Button>
             <Button className=' m-auto' onClick={testSign} disabled={!isConnected}>
                 Sign test
             </Button>
