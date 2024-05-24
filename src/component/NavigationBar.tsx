@@ -1,36 +1,41 @@
 import React from "react";
 import {ConnectKitButton} from "connectkit";
-import {Container, Navbar, Nav} from "react-bootstrap";
 import {Link} from "react-router-dom";
+import {Menu} from "antd";
 
 function NavigationBar() {
+
+    function getItems() {
+        const res: any[] = [];
+
+        function addItem(label: string, key: string, link: string) {
+            res.push({
+                label: (<Link to={link}>{label}</Link>),
+                key: key,
+            })
+        }
+
+        addItem('Sign', 'sign', '/');
+        addItem('My VC', 'vc-list', '/vc-list');
+        addItem('Mine', 'mine', '/mine');
+        return res;
+    }
+
     return (
-        <Navbar expand='lg' className="p-3 bg-body-tertiary">
-            <Container className={'d-flex'}>
-                <div className={'d-flex float-start'}>
-                    <Navbar.Brand className={'m-2'}>
-                        <Link to={'/'} style={{textDecoration: "none"}}>DID Demo APP</Link>
-                    </Navbar.Brand>
-                    <Nav  className={'m-2'}>
-                        <Navbar.Text>
-                            <Link to={`/vc-list`}>
-                                My VC
-                            </Link>
-                        </Navbar.Text>
-                    </Nav>
-                    <Nav  className={'m-2'}>
-                        <Navbar.Text>
-                            <Link to={`/mine`}>
-                                Mine
-                            </Link>
-                        </Navbar.Text>
-                    </Nav>
-                </div>
-                <div className='float-end'>
-                    <ConnectKitButton theme="soft"/>
-                </div>
-            </Container>
-        </Navbar>
+        <>
+            <div className='text-lg-start text-white fs-4 me-3'>
+                <Link to={'/'} style={{textDecoration: 'none'}}>DID Demo</Link>
+            </div>
+            <Menu
+                theme={'dark'}
+                style={{flex: 1}}
+                mode={'horizontal'}
+                items={getItems()}>
+            </Menu>
+            <div className='float-end align-content-center'>
+                <ConnectKitButton mode='dark' theme="soft"/>
+            </div>
+        </>
     );
 }
 

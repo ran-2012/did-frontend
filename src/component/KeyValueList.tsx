@@ -1,6 +1,6 @@
-import React, {useEffect, useState} from "react";
-import {Button, Card, CardBody, CardHeader, CardText, InputGroup, ListGroup} from "react-bootstrap";
+import React, {useEffect} from "react";
 import Form from 'react-bootstrap/Form';
+import {Button, Card, Input, Table, TableProps} from "antd";
 
 enum ItemType {
 
@@ -30,7 +30,7 @@ interface Param {
 function KeyValueList(param: Param) {
 
     useEffect(() => {
-        if(param.list.length == 0) {
+        if (param.list.length == 0) {
             param.onListUpdate([new ItemParam('', '')])
         }
     }, [param])
@@ -53,55 +53,51 @@ function KeyValueList(param: Param) {
         return param.list.length > 1;
     }
 
-    function renderList() {
-        return param.list.map((item, index) =>
-            <ListGroup.Item className='d-flex' key={`item-${index}`}>
-                <InputGroup className='m-1' style={{width: 'auto'}}>
-                    <InputGroup.Text>{index + 1}</InputGroup.Text>
-
-                </InputGroup>
-                <InputGroup className='m-1 w-50'>
-                    <InputGroup.Text>Key</InputGroup.Text>
-                    <Form.Control type='text' name='key' defaultValue={item.key} disabled={!item.enabled}
-                                  onChange={(e) => {
-                                      param.list[index].key = e.target.value;
-                                      param.onListUpdate(param.list);
-                                  }}>
-                    </Form.Control>
-                </InputGroup>
-                <InputGroup className='m-1 flex-grow-1'>
-                    <InputGroup.Text>Value</InputGroup.Text>
-                    <Form.Control type='text' name='value' defaultValue={item.value} disabled={!item.enabled}
-                                  onChange={(e) => {
-                                      param.list[index].value = e.target.value;
-                                      param.onListUpdate(param.list);
-                                  }}>
-                    </Form.Control>
-                </InputGroup>
-            </ListGroup.Item>)
+    function getColumn(): TableProps<ItemParam>['columns'] {
+        return [
+            {
+                title: 'Id',
+                key: 'key',
+                render: (_, __, index) => {
+                    return index;
+                },
+            },
+            {
+                title: 'Key',
+                key: 'key',
+                render: (_, item, index: number) => {
+                    return (
+                        <Input disabled={!item.enabled} defaultValue={item.key} onChange={(e) => {
+                            param.list[index].key = e.target.value;
+                            param.onListUpdate(param.list);
+                        }}></Input>
+                    )
+                },
+                width: 150
+            },
+            {
+                title: 'Value',
+                key: 'value',
+                render: (_, item, index: number) => {
+                    return (
+                        <Input disabled={!item.enabled} defaultValue={item.value} onChange={(e) => {
+                            param.list[index].value = e.target.value;
+                            param.onListUpdate(param.list);
+                        }}></Input>
+                    )
+                }
+            },
+        ]
     }
 
     return (
-        <Card className='m-2' style={{width: '60vw'}}>
-            <CardHeader className='d-flex justify-content-between'>
-                <div className='d-flex'>
-                    <CardText className='m-auto fs-6'>Data fields</CardText>
-                </div>
-                <div className='d-flex justify-content-end'>
-                    <Button className='me-2 font-monospace' size='sm' onClick={addItem}>
-                        +
-                    </Button>
-                    <Button className='font-monospace' size='sm' onClick={removeItem}
-                            disabled={!enableRemoveItemButton()}>
-                        -
-                    </Button>
-                </div>
-            </CardHeader>
-            <CardBody>
-                <ListGroup className='m-auto'>
-                    {renderList()}
-                </ListGroup>
-            </CardBody>
+        <Card className='m-2' style={{width: '60vw'}} title={'Data fields'} extra={
+            <div className='d-flex justify-content-end'>
+                <Button className='me-2 font-monospace' type={'primary'} onClick={addItem} icon={'+'}/>
+                <Button className='font-monospace' type={'primary'} onClick={removeItem}
+                        disabled={!enableRemoveItemButton()} icon={'-'}/>
+            </div>}>
+            <Table columns={getColumn()} dataSource={param.list} pagination={false} rowKey={'id'}/>
         </Card>
     );
 }

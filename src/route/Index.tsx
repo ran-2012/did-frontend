@@ -1,4 +1,3 @@
-import {Button} from "react-bootstrap";
 import KeyValueList, {ItemParam} from "../component/KeyValueList.tsx";
 import {createTestCredential, getDid} from "../veramo/utility.ts";
 import {useAccount} from "wagmi";
@@ -7,6 +6,7 @@ import toast from "../toast.ts";
 import {useEffect, useState} from "react";
 import {isSuccess} from "@blockchain-lab-um/masca-connector";
 import {VerifiableCredential} from "@veramo/core";
+import {Button} from "antd";
 
 function exampleItemList() {
     const result: ItemParam[] = []
@@ -61,8 +61,8 @@ function Index() {
     }
 
     return (
-        <div className='d-flex flex-column m-2'>
-            <Button className=' m-auto' onClick={testSign} disabled={!isConnected}>
+        <div className='d-flex flex-column m-2 align-content-center'>
+            <Button type={'primary'} size={'large'} className='m-auto' onClick={testSign} disabled={!isConnected}>
                 Sign test
             </Button>
             <div className='flex-grow-1 m-auto'>

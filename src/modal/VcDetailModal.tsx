@@ -1,15 +1,6 @@
-import {
-    CloseButton, ListGroup,
-    ListGroupItem,
-    Modal,
-    ModalBody,
-    ModalHeader,
-    ModalTitle
-} from "react-bootstrap";
-import ModalPortal from "./ModalPortal.tsx";
 import {VerifiableCredential} from "@veramo/core";
 import {formatDid} from "../veramo/utility.ts";
-import {Button, Card, Descriptions, Table, TableColumnsType} from 'antd'
+import {Button, Card, Descriptions, Modal, Table, TableColumnsType, Tag} from 'antd'
 import React, {useMemo} from "react";
 import dayjs from 'dayjs';
 
@@ -32,20 +23,6 @@ function VcDetailModal(param: Param) {
         return Date.parse(credential.expirationDate) > Date.now();
     }, [credential]);
 
-    function getTitle() {
-        if (param.title) {
-            return (
-                <ModalHeader>
-                    <ModalTitle>
-                        {param.title}
-                    </ModalTitle>
-                    <CloseButton onClick={param.onClose}/>
-                </ModalHeader>
-            )
-        } else {
-            return <></>
-        }
-    }
 
     function getType() {
         if (!credential.type) {
@@ -86,7 +63,7 @@ function VcDetailModal(param: Param) {
         return list;
     }
 
-    function getExpirationDate(){
+    function getExpirationDate() {
         if (credential.expirationDate) {
             return dayjs(credential.expirationDate).format('YYYY-MM-DD HH:mm:ss')
         } else {
@@ -96,52 +73,53 @@ function VcDetailModal(param: Param) {
 
     function getIsValid() {
         return isValid ?
-            (<div style={{color: 'blue'}}>
+            (<Tag color={'blue'}>
                 Valid
-            </div>) :
-            (<div style={{color: 'red'}} >
+            </Tag>) :
+            (<Tag color={'red'}>
                 Invalid
-            </div>)
+            </Tag>)
     }
 
     // DETAIL: TYPE, SUBJECT, ISSUER, DATES, IS_VALID
     return (
-        <ModalPortal>
+        <div style={{width: "fit-content"}}>
+
             <Modal
-                size={'lg'}
-                // centered
-                show={param.show}
-                onHide={() => param.onClose()}>
-                {/*{getTitle()}*/}
-                <ModalBody>
-                    <Card title={getType()}>
-                        <Descriptions column={1} layout={'horizontal'}>
-                            <Descriptions.Item label={'Issuer'}>
-                                {getIssuer()}
-                            </Descriptions.Item>
-                            <Descriptions.Item label={'Issue Date'}>
-                                {dayjs(credential.issuanceDate).format('YYYY-MM-DD HH:mm:ss')}
-                            </Descriptions.Item>
-                            <Descriptions.Item label={'Expiration Date'}>
-                                {getExpirationDate()}
-                            </Descriptions.Item>
-                            <Descriptions.Item label={'Status'}>
-                                {getIsValid()}
-                            </Descriptions.Item>
-                            <Descriptions.Item label={'Subjects'}>
-                                {' '}
-                            </Descriptions.Item>
-                        </Descriptions>
-                        <Table bordered columns={getColumn()} dataSource={getSubjectList()}
-                               pagination={false}>
-                        </Table>
-                    </Card>
-                </ModalBody>
-                <Modal.Footer>
-                    <Button onClick={param.onClose}>Close</Button>
-                </Modal.Footer>
+                open={param.show}
+                title={'Credential Detail'}
+                width={'auto'}
+                footer={(_, {OkBtn, CancelBtn}) => (
+                    <>
+                        <OkBtn/>
+                    </>
+                )}
+                onOk={() => param.onClose()}
+                onCancel={() => param.onClose()}>
+                <Card title={getType()}>
+                    <Descriptions column={1} layout={'horizontal'}>
+                        <Descriptions.Item label={'Issuer'}>
+                            <div className={'font-monospace'}>{getIssuer()}</div>
+                        </Descriptions.Item>
+                        <Descriptions.Item label={'Issue Date'}>
+                            {dayjs(credential.issuanceDate).format('YYYY-MM-DD HH:mm:ss')}
+                        </Descriptions.Item>
+                        <Descriptions.Item label={'Expiration Date'}>
+                            {getExpirationDate()}
+                        </Descriptions.Item>
+                        <Descriptions.Item label={'Status'}>
+                            {getIsValid()}
+                        </Descriptions.Item>
+                        <Descriptions.Item label={'Subjects'}>
+                            {' '}
+                        </Descriptions.Item>
+                    </Descriptions>
+                    <Table bordered columns={getColumn()} dataSource={getSubjectList()}
+                           pagination={false}>
+                    </Table>
+                </Card>
             </Modal>
-        </ModalPortal>
+        </div>
     );
 }
 

@@ -1,7 +1,7 @@
-import {Button} from "react-bootstrap";
 import VcDetailModal from "../modal/VcDetailModal.tsx";
 import {useState} from "react";
 import {VerifiableCredential} from "@veramo/core";
+import {Button} from "antd";
 
 interface Param {
 
@@ -28,8 +28,8 @@ function VcList(param: Param) {
     // DETAIL: TYPE, SUBJECT, ISSUER, DATES, IS_VALID
     return (
         <div className='d-flex flex-column m-2'>
-            <Button className='mb-2 m-auto' onClick={showModal}>Toast</Button>
-            <VcDetailModal vc={getTestVc()} title={'Verifiable Credential Detail'} show={true} onClose={closeVcDetailModal}/>
+            <Button className='mb-2' onClick={showModal}>Toast</Button>
+            <VcDetailModal vc={getTestVc()} title={'Verifiable Credential Detail'} show={show} onClose={closeVcDetailModal}/>
         </div>
     );
 }
