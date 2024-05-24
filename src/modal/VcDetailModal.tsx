@@ -3,11 +3,15 @@ import {formatDid} from "../veramo/utility.ts";
 import {Button, Card, Descriptions, Modal, Table, TableColumnsType, Tag} from 'antd'
 import React, {useMemo} from "react";
 import dayjs from 'dayjs';
+import {useMasca} from "../masca/utility.ts";
+import toast from "../toast.ts";
+import {isSuccess} from "@blockchain-lab-um/masca-connector";
 
 interface Param {
     title?: string
     vc: VerifiableCredential
     show: boolean
+    showSaveButton?: boolean
     onClose: () => void;
 }
 
@@ -17,6 +21,7 @@ interface SubjectData {
 }
 
 function VcDetailModal(param: Param) {
+    const masca = useMasca();
     const credential = param.vc;
     const isValid = useMemo(() => {
         if (!credential.expirationDate) return true;
@@ -81,6 +86,25 @@ function VcDetailModal(param: Param) {
             </Tag>)
     }
 
+    function saveCredential() {
+        console.log("Saving")
+        if (masca.api) {
+            toast.info("Saving credential")
+            masca.api.saveCredential(credential).then((res) => {
+                if (isSuccess(res)) {
+                    toast.success("Credential saved")
+                } else {
+                    toast.error("Failed to save credential")
+                }
+            }).catch(() => {
+                toast.error("Failed to save credential")
+            })
+        } else {
+            console.log("Masca not found")
+            toast.error("Masca not connected")
+        }
+    }
+
     // DETAIL: TYPE, SUBJECT, ISSUER, DATES, IS_VALID
     return (
         <div style={{width: "fit-content"}}>
@@ -89,11 +113,12 @@ function VcDetailModal(param: Param) {
                 open={param.show}
                 title={'Credential Detail'}
                 width={'auto'}
-                footer={(_, {OkBtn, CancelBtn}) => (
+                footer={
                     <>
-                        <OkBtn/>
+                        {param.showSaveButton && <Button onClick={saveCredential}>Save</Button>}
+                        <Button type={'primary'} onClick={() => param.onClose()}>Close</Button>
                     </>
-                )}
+                }
                 onOk={() => param.onClose()}
                 onCancel={() => param.onClose()}>
                 <Card title={getType()}>
