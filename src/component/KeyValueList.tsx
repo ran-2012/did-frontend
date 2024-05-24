@@ -1,5 +1,4 @@
 import React, {useEffect} from "react";
-import Form from 'react-bootstrap/Form';
 import {Button, Card, Input, Table, TableProps} from "antd";
 
 enum ItemType {
