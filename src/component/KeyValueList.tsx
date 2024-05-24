@@ -57,7 +57,7 @@ function KeyValueList(param: Param) {
         return [
             {
                 title: 'Id',
-                key: 'key',
+                key: 'id',
                 render: (_, __, index) => {
                     return index;
                 },
@@ -91,13 +91,13 @@ function KeyValueList(param: Param) {
     }
 
     return (
-        <Card className='m-2' style={{width: '60vw'}} title={'Data fields'} extra={
+        <Card className='m-2' style={{width: '80vw'}} title={'Data fields'} extra={
             <div className='d-flex justify-content-end'>
                 <Button className='me-2 font-monospace' type={'primary'} onClick={addItem} icon={'+'}/>
                 <Button className='font-monospace' type={'primary'} onClick={removeItem}
                         disabled={!enableRemoveItemButton()} icon={'-'}/>
             </div>}>
-            <Table columns={getColumn()} dataSource={param.list} pagination={false} rowKey={'id'}/>
+            <Table columns={getColumn()} dataSource={param.list} pagination={false}/>
         </Card>
     );
 }
