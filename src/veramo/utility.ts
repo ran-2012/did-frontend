@@ -1,3 +1,5 @@
+import {VerifiableCredential} from "@veramo/core";
+
 function convertKvList(list: Array<{ key: string, value: string }>) {
     const map: Map<string, string> = new Map()
     for (const {key, value} of list) {
@@ -38,10 +40,29 @@ function formatAddress(address: string) {
     return `${address.slice(0, 5)}...${address.slice(-4)}`
 }
 
-function formatDid(did: string){
+function formatDid(did: string) {
     const seg = did.split(':')
     seg[seg.length - 1] = formatAddress(seg[seg.length - 1])
     return seg.join(':')
+}
+
+const VcUtility = {
+    getIssuer: (vc: VerifiableCredential, format: boolean = false) => {
+        if (typeof vc.issuer == 'string') {
+            return format ? formatDid(vc.issuer) : vc.issuer
+        }
+        return format ? formatDid(vc.issuer.id) : vc.issuer.id
+    },
+    getTypeString: (vc: VerifiableCredential, separator: string = ', ') => {
+        if (!vc.type) {
+            return 'Unknown Credential'
+        }
+        if (typeof vc.type === 'string') {
+            return vc.type;
+        } else {
+            return vc.type.join(separator);
+        }
+    }
 }
 
 export {
@@ -49,6 +70,7 @@ export {
     createTestCredential,
     getDid,
     formatAddress,
-    formatDid
+    formatDid,
+    VcUtility
 }
 

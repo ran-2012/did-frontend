@@ -1,5 +1,5 @@
 import {VerifiableCredential} from "@veramo/core";
-import {formatDid} from "../veramo/utility.ts";
+import {VcUtility} from "../veramo/utility.ts";
 import {Button, Card, Descriptions, Modal, Table, TableColumnsType, Tag} from 'antd'
 import React, {useMemo} from "react";
 import dayjs from 'dayjs';
@@ -27,25 +27,6 @@ function VcDetailModal(param: Param) {
         if (!credential.expirationDate) return true;
         return Date.parse(credential.expirationDate) > Date.now();
     }, [credential]);
-
-
-    function getType() {
-        if (!credential.type) {
-            return 'Unknown Credential'
-        }
-        if (typeof credential.type === 'string') {
-            return credential.type;
-        } else {
-            return credential.type.join(', ');
-        }
-    }
-
-    function getIssuer() {
-        if (typeof credential.issuer == 'string') {
-            return formatDid(credential.issuer)
-        }
-        return formatDid(credential.issuer.id)
-    }
 
     function getColumn(): TableColumnsType<SubjectData> {
         return [
@@ -121,10 +102,10 @@ function VcDetailModal(param: Param) {
                 }
                 onOk={() => param.onClose()}
                 onCancel={() => param.onClose()}>
-                <Card title={getType()}>
+                <Card title={VcUtility.getTypeString(credential)}>
                     <Descriptions column={1} layout={'horizontal'}>
                         <Descriptions.Item label={'Issuer'}>
-                            <div className={'font-monospace'}>{getIssuer()}</div>
+                            <div className={'font-monospace'}>{VcUtility.getIssuer(credential, true)}</div>
                         </Descriptions.Item>
                         <Descriptions.Item label={'Issue Date'}>
                             {dayjs(credential.issuanceDate).format('YYYY-MM-DD HH:mm:ss')}
