@@ -93,7 +93,8 @@ function VcDetailModal(param: Param) {
             <Modal
                 open={param.show}
                 title={'Credential Detail'}
-                width={'auto'}
+                width={'80%'}
+                style={{maxWidth: '1200px'}}
                 footer={
                     <>
                         {param.showSaveButton && <Button onClick={saveCredential}>Save</Button>}

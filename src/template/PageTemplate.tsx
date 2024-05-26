@@ -8,20 +8,28 @@ function PageTemplate() {
     const content = useLoaderData() as ReactNode;
     return (
         <Web3Provider>
-            <Layout style={{height: '100vh'}}>
+            <Layout className={'vh-100'}>
                 <Layout.Header className='d-flex flex-col'>
                     <NavigationBar/>
                 </Layout.Header>
-                <Layout.Content >
+                <Layout.Content>
                     <Flex style={{
-                        margin: '2em 2em 0 2em',
-                        borderRadius: '1em',
-                        height: 'calc(100% - 2em)',
+                        margin: '1em 1em 0em',
+                        height: 'calc(100% - 1em)',
                         justifyContent: 'center',
-                        backgroundColor: 'white',
-                        overflow: 'auto'
                     }}>
-                        {content}
+                        <Flex style={{
+                            borderRadius: '1em',
+                            height: '100%',
+                            justifySelf: 'center',
+                            maxWidth: '1200px',
+                            width: '100%',
+                            justifyContent: 'center',
+                            backgroundColor: 'white',
+                            overflow: 'auto'
+                        }}>
+                            {content}
+                        </Flex>
                     </Flex>
                 </Layout.Content>
                 <Layout.Footer style={{textAlign: 'right', marginLeft: '2em'}}>

@@ -6,6 +6,9 @@ import {ToastContainer} from "react-toastify";
 import 'bootstrap/dist/css/bootstrap.css';
 import 'react-toastify/dist/ReactToastify.css';
 
+import {ConfigProvider} from 'antd';
+import enUS from 'antd/locale/en_US';
+
 import Index from './route/Index.tsx'
 import Mine from './route/Mine.tsx'
 import Error from './route/Error.tsx'
@@ -28,8 +31,10 @@ const router = createBrowserRouter([
 ])
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
-    <React.StrictMode >
+    <React.StrictMode>
         <ToastContainer/>
-        <RouterProvider router={router}/>
+        <ConfigProvider locale={enUS}>
+            <RouterProvider router={router}/>
+        </ConfigProvider>
     </React.StrictMode>,
 )
