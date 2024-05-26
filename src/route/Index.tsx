@@ -6,7 +6,8 @@ import toast from "../toast.ts";
 import {useEffect, useState} from "react";
 import {isSuccess} from "@blockchain-lab-um/masca-connector";
 import {VerifiableCredential} from "@veramo/core";
-import {Button} from "antd";
+import {Button, Flex} from "antd";
+import VcDetailModal from "../modal/VcDetailModal.tsx";
 
 function exampleItemList() {
     const result: ItemParam[] = []
@@ -16,6 +17,8 @@ function exampleItemList() {
 }
 
 function Index() {
+    const [vc, setVc] = useState<VerifiableCredential | null>(null);
+    const [isShowVcModal, setShowVcModal] = useState(false);
     const [itemList, setItemList] =
         useState<ItemParam[]>(exampleItemList())
     const account = useAccount();
@@ -50,6 +53,9 @@ function Index() {
 
                 console.log(res.data);
                 toast.success("Signing succeeded")
+
+                setVc(vc);
+                setShowVcModal(true);
             } else {
                 toast.error("Failed to sign")
             }
@@ -61,16 +67,21 @@ function Index() {
     }
 
     return (
-        <div className='d-flex flex-column m-2 align-content-center'>
-            <Button type={'primary'} size={'large'} className='m-auto' onClick={testSign} disabled={!isConnected}>
-                Sign test
-            </Button>
-            <div className='flex-grow-1 m-auto'>
+        <Flex className='flex-column w-100 align-content-center'>
+            <div className={'m-auto'}>
+                <Button type={'primary'} size={'large'} className={'mt-3'} onClick={testSign} disabled={!isConnected}>
+                    Sign test
+                </Button>
+            </div>
+            <div className='flex-grow-1 w-100 '>
                 <KeyValueList list={itemList} onListUpdate={(newItems) => {
                     setItemList(newItems)
                 }}/>
             </div>
-        </div>
+            {vc && <VcDetailModal vc={vc} show={isShowVcModal} showSaveButton={true} onClose={() => {
+                setShowVcModal(false)
+            }}/>}
+        </Flex>
     )
 }
 

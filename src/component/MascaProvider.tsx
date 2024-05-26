@@ -22,8 +22,8 @@ function MascaProvider(param: Param) {
                     isConnecting.current = true;
                     setMascaApi(await connectMasca(account.address))
                     isConnecting.current = false;
+                    toast.success('Connected to Masca')
                 }
-                toast.success('Connected to Masca')
             } catch (e) {
                 console.log(e);
                 isConnecting.current = false;

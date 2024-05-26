@@ -1,8 +1,9 @@
-import {toast as reactToast, ToastOptions} from 'react-toastify';
+import {toast as reactToast, ToastOptions, Slide} from 'react-toastify';
 
 const configTemplate: ToastOptions = {
     position: "bottom-right",
     autoClose: 2000,
+    transition: Slide,
     hideProgressBar: false,
     closeOnClick: true,
     pauseOnHover: true,

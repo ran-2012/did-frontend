@@ -90,13 +90,14 @@ function KeyValueList(param: Param) {
     }
 
     return (
-        <Card className='m-2' style={{width: '80vw'}} title={'Data fields'} extra={
+        <Card className='m-3' title={'Data fields'} extra={
             <div className='d-flex justify-content-end'>
                 <Button className='me-2 font-monospace' type={'primary'} onClick={addItem} icon={'+'}/>
                 <Button className='font-monospace' type={'primary'} onClick={removeItem}
                         disabled={!enableRemoveItemButton()} icon={'-'}/>
             </div>}>
-            <Table columns={getColumn()} dataSource={param.list} pagination={false}/>
+            <Table columns={getColumn()} dataSource={param.list} pagination={false}
+                   rowKey={(itemParam, index) => index ? index : itemParam.key}/>
         </Card>
     );
 }
