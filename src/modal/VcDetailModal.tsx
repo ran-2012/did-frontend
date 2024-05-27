@@ -1,7 +1,8 @@
 import {VerifiableCredential} from "@veramo/core";
 import {VcUtility} from "../veramo/utility.ts";
-import {Button, Card, Descriptions, Modal, Table, TableColumnsType, Tag} from 'antd'
-import React, {useMemo} from "react";
+import {Button, Card, Descriptions, Modal, Spin, Table, TableColumnsType, Tag, Tooltip} from 'antd'
+import {LoadingOutlined} from '@ant-design/icons';
+import React, {useEffect, useMemo, useState} from "react";
 import dayjs from 'dayjs';
 import {useMasca} from "../masca/utility.ts";
 import toast from "../toast.ts";
@@ -20,13 +21,43 @@ interface SubjectData {
     value: string
 }
 
+enum ValidState {
+    Idle,
+    Verifying,
+    Valid,
+    Invalid,
+    Unknown,
+}
+
 function VcDetailModal(param: Param) {
     const masca = useMasca();
     const credential = param.vc;
-    const isValid = useMemo(() => {
+    const [isValid, setIsValid] = useState<ValidState>(ValidState.Idle);
+    const [invalidReason, setInvalidReason] = useState<string>('');
+    const isNotExpired = useMemo(() => {
         if (!credential.expirationDate) return true;
         return Date.parse(credential.expirationDate) > Date.now();
     }, [credential]);
+
+    useEffect(() => {
+        if (!param.show) return;
+        setTimeout(async () => {
+            if (masca.api) {
+                console.log("Verifying")
+                setIsValid(ValidState.Verifying);
+                const res = await masca.api.verifyData({credential: credential});
+                console.log(res)
+                if (isSuccess(res)) {
+                    setIsValid(ValidState.Valid);
+                } else {
+                    setIsValid(ValidState.Invalid);
+                }
+            } else {
+                toast.warn('Masca not connected')
+                setIsValid(ValidState.Unknown)
+            }
+        })
+    }, [param.vc, param.show]);
 
     function getColumn(): TableColumnsType<SubjectData> {
         return [
@@ -57,14 +88,33 @@ function VcDetailModal(param: Param) {
         }
     }
 
-    function getIsValid() {
-        return isValid ?
+    function getIsExpired() {
+        return isNotExpired ?
             (<Tag color={'blue'}>
-                Valid
+                Not expired
             </Tag>) :
             (<Tag color={'red'}>
-                Invalid
+                Expired
             </Tag>)
+    }
+
+    function getIsValid() {
+        switch (isValid) {
+            case ValidState.Idle:
+                return '';
+            case ValidState.Valid:
+                return (<Tag color={'blue'}>Valid</Tag>);
+            case ValidState.Invalid:
+                return (<Tooltip title={invalidReason}><Tag color={'red'}>Invalid</Tag></Tooltip>);
+            case ValidState.Verifying:
+                return (
+                    <Tooltip title={'Verifying...'}>
+                        <Spin indicator={<LoadingOutlined spin/>}/>
+                    </Tooltip>
+                );
+            case ValidState.Unknown:
+                return (<Tag style={{color: 'gray'}}>Unknown</Tag>)
+        }
     }
 
     function saveCredential() {
@@ -115,7 +165,7 @@ function VcDetailModal(param: Param) {
                             {getExpirationDate()}
                         </Descriptions.Item>
                         <Descriptions.Item label={'Status'}>
-                            {getIsValid()}
+                            {getIsExpired()}{getIsValid()}
                         </Descriptions.Item>
                         <Descriptions.Item label={'Subjects'}>
                             {' '}

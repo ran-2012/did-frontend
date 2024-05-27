@@ -93,7 +93,6 @@ function VcList(param: Param) {
     }
 
     function closeVcDetailModal() {
-        console.log("close")
         setIsShowVcModal(false);
     }
 
