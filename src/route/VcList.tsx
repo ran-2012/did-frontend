@@ -146,7 +146,7 @@ function VcList(param: Param) {
                   )}></List>
             <VcDetailModal vc={currentVc.data} title={'Verifiable Credential Detail'} show={isShowVcModal}
                            onClose={closeVcDetailModal}/>
-            <JsonRawModal show={isShowJsonModal} json={JSON.stringify(currentVc, null, 2)}
+            <JsonRawModal show={isShowJsonModal} json={JSON.stringify(currentVc.data, null, 2)}
                           onClose={() => setIsShowJsonModal(false)}/>
             <OkCancelModal show={isShowDeleteConfirmModal} message={'Deletion is irreversible. Are you sure?'}
                            onOk={() => {
