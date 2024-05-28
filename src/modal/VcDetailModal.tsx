@@ -43,8 +43,6 @@ function VcDetailModal(param: Param) {
         if (!param.show) return;
         setTimeout(async () => {
             if (masca.api) {
-                console.log("Verifying")
-                setIsValid(ValidState.Verifying);
                 const res = await masca.api.verifyData({credential: credential});
                 console.log(res)
                 if (isSuccess(res)) {

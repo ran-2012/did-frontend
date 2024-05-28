@@ -1,7 +1,7 @@
 import VcDetailModal from "../modal/VcDetailModal.tsx";
 import {useState} from "react";
 import {Button, Flex, List} from "antd";
-import {useMasca} from "../masca/utility.ts";
+import {callWrapper, useMasca} from "../masca/utility.ts";
 import toast from "../toast.ts";
 import {isSuccess, QueryCredentialsRequestResult} from "@blockchain-lab-um/masca-connector";
 import {VcUtility} from "../veramo/utility.ts";
@@ -34,54 +34,19 @@ function VcList(param: Param) {
     const [isShowDeleteConfirmModal, setIsShowDeleteConfirmModal] = useState(false);
 
     async function loadCredential() {
-        if (mosca.api) {
-            toast.info("Requesting Credential")
-            setIsLoading(true)
-            try {
-                const result = await mosca.api.queryCredentials()
-                if (isSuccess(result)) {
-                    toast.success("Credential loaded")
-                    console.log(`${result.data.length} credentials loaded`)
-                    setVcList(result.data)
-                    setIsLoading(false)
-                    return true;
-                } else {
-                    console.log(result.error)
-                    toast.error("Failed to load Credential")
-                }
-            } catch (e) {
-                console.log(e)
-                toast.error("Failed to load Credential")
-            }
-            setIsLoading(false)
-        } else {
-            toast.error("Masca is not connected")
-        }
-        return false;
+        return isSuccess(await callWrapper(mosca.api?.queryCredentials, {
+            infoMsg: 'Requesting Credential',
+            successMsg: 'Credential loaded',
+            errorMsg: 'Failed to load Credential'
+        },))
     }
 
     async function deleteCredential() {
-        if (mosca.api) {
-            toast.info("Deleting Credential")
-            try {
-                const result = await mosca.api.deleteCredential(currentVc.metadata.id)
-                if (isSuccess(result)) {
-                    toast.success("Credential deleted")
-                    console.log(`Credential deleted`)
-                    return true;
-                } else {
-                    console.log(result.error)
-                    toast.error("Failed to delete Credential")
-                }
-            } catch (e) {
-                console.log(e)
-                toast.error("Failed to delete Credential")
-            }
-            setIsLoading(false)
-        } else {
-            toast.error("Masca is not connected")
-        }
-        return false;
+        return isSuccess(await callWrapper(mosca.api?.deleteCredential, {
+            infoMsg: 'Deleting Credential',
+            successMsg: 'Credential deleted',
+            errorMsg: 'Failed to delete Credential'
+        }, currentVc.metadata.id))
     }
 
     function updateCurrentVc(vc: VC | null = null) {
