@@ -1,13 +1,15 @@
 import VcDetailModal from "../modal/VcDetailModal.tsx";
-import {useState} from "react";
+import {useMemo, useState} from "react";
 import {Button, Flex, List} from "antd";
 import {callWrapper, useMasca} from "../masca/utility.ts";
-import toast from "../toast.ts";
 import {isSuccess, QueryCredentialsRequestResult} from "@blockchain-lab-um/masca-connector";
 import {VcUtility} from "../veramo/utility.ts";
 import JsonRawModal from "../modal/JsonRawModal.tsx";
 import OkCancelModal from "../modal/OkCancelModal.tsx";
 import {VerifiableCredential} from "@veramo/core";
+import {QrcodeOutlined} from "@ant-design/icons";
+import QrCodeModal from "../modal/QrCodeModal.tsx";
+import {compressToBase64} from "../utility/compress.ts";
 
 interface Param {
 
@@ -26,12 +28,16 @@ function getTestVc(): VC {
 
 function VcList(param: Param) {
     const mosca = useMasca();
+    const vcListCache = useMemo<VC[]>(() => {
+        return []
+    }, [mosca.api])
     const [currentVc, setCurrentVc] = useState<VC>(getTestVc)
     const [isLoading, setIsLoading] = useState(false)
     const [vcList, setVcList] = useState<VC[]>([])
     const [isShowVcModal, setIsShowVcModal] = useState(false);
     const [isShowJsonModal, setIsShowJsonModal] = useState(false);
     const [isShowDeleteConfirmModal, setIsShowDeleteConfirmModal] = useState(false);
+    const [isShowQrCodeModal, setIsShowQrCodeModal] = useState(false);
 
     async function loadCredential() {
         const res = await callWrapper(mosca.api?.queryCredentials, {
@@ -74,6 +80,10 @@ function VcList(param: Param) {
         </p>)
     }
 
+    function showQrCodeModal() {
+
+    }
+
     // BRIEF: ISSUER, DATE, TYPE
     // DETAIL: TYPE, SUBJECT, ISSUER, DATES, IS_VALID
     return (
@@ -105,7 +115,11 @@ function VcList(param: Param) {
                   loading={isLoading}
                   renderItem={(item, index) => (
                       <List.Item key={index} actions={[
-                          <a onClick={() => {
+                          <a className={'align-self-center text-decoration-none'}
+                              onClick={() => setIsShowQrCodeModal(true)}>
+                              <QrcodeOutlined className={'align-self-center'} style={{fontSize: '20px'}}/> QR Code
+                          </a>,
+                          <a style={{color: 'rgb(42,140,253)'}} onClick={() => {
                               updateCurrentVc(item)
                               setIsShowVcModal(true)
                           }}>Detail</a>,
@@ -136,6 +150,8 @@ function VcList(param: Param) {
                                })
                            }}
                            onCancel={() => setIsShowDeleteConfirmModal(false)}/>
+            <QrCodeModal show={isShowQrCodeModal} onClose={() => setIsShowQrCodeModal(false)}
+                         qrString={compressToBase64(currentVc.data)}/>
         </Flex>
     );
 }
