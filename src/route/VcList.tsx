@@ -34,11 +34,17 @@ function VcList(param: Param) {
     const [isShowDeleteConfirmModal, setIsShowDeleteConfirmModal] = useState(false);
 
     async function loadCredential() {
-        return isSuccess(await callWrapper(mosca.api?.queryCredentials, {
+        const res = await callWrapper(mosca.api?.queryCredentials, {
             infoMsg: 'Requesting Credential',
             successMsg: 'Credential loaded',
             errorMsg: 'Failed to load Credential'
-        },))
+        },)
+        if (isSuccess(res)) {
+            setVcList(res.data)
+            return true;
+        } else {
+            return false;
+        }
     }
 
     async function deleteCredential() {
@@ -72,19 +78,26 @@ function VcList(param: Param) {
     // DETAIL: TYPE, SUBJECT, ISSUER, DATES, IS_VALID
     return (
         <Flex className='d-flex flex-column m-2 w-100'>
-            <Flex className={'justify-content-start'}>
-                <Button size={'large'} type={'primary'} className={'m-1'} onClick={loadCredential}>Load
-                    Credential</Button>
-                <Button size={'large'} className={'m-1'} onClick={() => {
-                    setIsShowVcModal(true)
-                }}>
-                    Demo Credential
-                </Button>
-                <Button size={'large'} className={'m-1'} onClick={() => {
-                    setIsShowJsonModal(true)
-                }}>
-                    Demo Credential Full
-                </Button>
+            <Flex className={'justify-content-between m-2'}>
+                <div className={''}>
+                    <Button size={'large'} type={'primary'} className={'me-2'} onClick={loadCredential}>Load
+                        Credential</Button>
+                    <Button size={'large'} type={'primary'}>
+                        Create Presentation
+                    </Button>
+                </div>
+                <div className={'align-self-end'}>
+                    <Button size={'large'} className={'me-2'} onClick={() => {
+                        setIsShowVcModal(true)
+                    }}>
+                        Demo Credential
+                    </Button>
+                    <Button size={'large'} className={''} onClick={() => {
+                        setIsShowJsonModal(true)
+                    }}>
+                        Demo Credential Full
+                    </Button>
+                </div>
             </Flex>
             <List bordered
                   className={'m-2 flex-grow-1'}
