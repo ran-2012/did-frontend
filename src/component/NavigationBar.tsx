@@ -1,4 +1,4 @@
-import React from "react";
+import React, {ReactNode} from "react";
 import {ConnectKitButton} from "connectkit";
 import {Link} from "react-router-dom";
 import {Menu} from "antd";
@@ -6,7 +6,7 @@ import {Menu} from "antd";
 function NavigationBar() {
 
     function getItems() {
-        const res: any[] = [];
+        const res: { label: ReactNode, key: string }[] = [];
 
         function addItem(label: string, key: string, link: string) {
             res.push({
@@ -16,8 +16,10 @@ function NavigationBar() {
         }
 
         addItem('Sign', 'sign', '/');
-        addItem('My VC', 'vc-list', '/vc-list');
+        addItem('My Credentials', 'vc-list', '/vc-list');
+        addItem('My Presentations', 'vp-list', '/vp-list');
         addItem('Mine', 'mine', '/mine');
+        addItem('Test', 'test', '/test');
         return res;
     }
 

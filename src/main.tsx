@@ -14,6 +14,8 @@ import Mine from './route/Mine.tsx'
 import Error from './route/Error.tsx'
 import PageTemplate from "./template/PageTemplate.tsx";
 import VcList from "./route/VcList.tsx";
+import VpList from "./route/VpList.tsx";
+import ModalTestGround from "./route/ModalTestGround.tsx";
 
 function createRoute(route: string, Component: React.ComponentClass | React.FC): RouteObject {
     return {
@@ -28,6 +30,8 @@ const router = createBrowserRouter([
     createRoute('/', Index),
     createRoute('mine', Mine),
     createRoute('vc-list', VcList),
+    createRoute('vp-list', VpList),
+    createRoute('test', ModalTestGround),
 ])
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
