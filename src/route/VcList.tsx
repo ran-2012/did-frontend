@@ -1,7 +1,7 @@
 import VcDetailModal from "../modal/VcDetailModal.tsx";
-import {useMemo, useState} from "react";
+import {useState} from "react";
 import {Button, Flex, List} from "antd";
-import {callWrapper, useMasca} from "../masca/utility.ts";
+import {useMasca, useMascaCallWrapper} from "../masca/utility.ts";
 import {isSuccess, QueryCredentialsRequestResult} from "@blockchain-lab-um/masca-connector";
 import {VcUtility} from "../veramo/utility.ts";
 import JsonRawModal from "../modal/JsonRawModal.tsx";
@@ -28,9 +28,7 @@ function getTestVc(): VC {
 
 function VcList(param: Param) {
     const mosca = useMasca();
-    const vcListCache = useMemo<VC[]>(() => {
-        return []
-    }, [mosca.api])
+    const mascaWrapper = useMascaCallWrapper();
     const [currentVc, setCurrentVc] = useState<VC>(getTestVc)
     const [isLoading, setIsLoading] = useState(false)
     const [vcList, setVcList] = useState<VC[]>([])
@@ -40,7 +38,7 @@ function VcList(param: Param) {
     const [isShowQrCodeModal, setIsShowQrCodeModal] = useState(false);
 
     async function loadCredential() {
-        const res = await callWrapper(mosca.api?.queryCredentials, {
+        const res = await mascaWrapper.call(mosca.api?.queryCredentials, {
             infoMsg: 'Requesting Credential',
             successMsg: 'Credential loaded',
             errorMsg: 'Failed to load Credential'
@@ -54,7 +52,7 @@ function VcList(param: Param) {
     }
 
     async function deleteCredential() {
-        return isSuccess(await callWrapper(mosca.api?.deleteCredential, {
+        return isSuccess(await mascaWrapper.call(mosca.api?.deleteCredential, {
             infoMsg: 'Deleting Credential',
             successMsg: 'Credential deleted',
             errorMsg: 'Failed to delete Credential'

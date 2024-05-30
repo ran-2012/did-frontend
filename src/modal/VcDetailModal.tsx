@@ -4,9 +4,9 @@ import {Button, Card, Descriptions, Modal, Spin, Table, TableColumnsType, Tag, T
 import {LoadingOutlined} from '@ant-design/icons';
 import React, {useEffect, useMemo, useState} from "react";
 import dayjs from 'dayjs';
-import {useMasca} from "../masca/utility.ts";
 import toast from "../toast.ts";
 import {isSuccess} from "@blockchain-lab-um/masca-connector";
+import {useMasca} from "../masca/utility.ts";
 
 interface Param {
     title?: string

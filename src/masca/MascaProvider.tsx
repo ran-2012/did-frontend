@@ -1,6 +1,6 @@
-import {ReactNode, useEffect, useRef, useState} from "react";
+import {createContext, ReactNode, useEffect, useRef, useState} from "react";
 import {useAccount} from "wagmi";
-import {connectMasca} from "../masca/utility.ts";
+import {connectMasca} from "./utility.ts";
 import {MascaApi} from "@blockchain-lab-um/masca-connector";
 import toast from "../toast.ts";
 
@@ -8,8 +8,16 @@ interface Param {
     children: ReactNode
 }
 
+export interface Masca {
+    api: MascaApi | null
+}
+
+export const MascaContext = createContext<Masca>({
+    api: null
+})
+
 function MascaProvider(param: Param) {
-    const [_, setMascaApi] = useState<MascaApi | null>(null);
+    const [mascaApi, setMascaApi] = useState<MascaApi | null>(null);
     const isConnecting = useRef(false);
     const account = useAccount();
     const {isConnected, address} = account;
@@ -33,7 +41,9 @@ function MascaProvider(param: Param) {
     }, [isConnected, address]);
 
     return (
-        <>{param.children}</>
+        <MascaContext.Provider value={{api: mascaApi}}>
+            {param.children}
+        </MascaContext.Provider>
     );
 }
 

@@ -1,13 +1,13 @@
 import KeyValueList, {ItemParam} from "../component/KeyValueList.tsx";
 import {createTestCredential, getDid} from "../veramo/utility.ts";
 import {useAccount} from "wagmi";
-import {useMasca} from "../masca/utility.ts";
 import toast from "../toast.ts";
 import {useEffect, useState} from "react";
 import {isSuccess} from "@blockchain-lab-um/masca-connector";
 import {VerifiableCredential} from "@veramo/core";
 import {Button, Flex} from "antd";
 import VcDetailModal from "../modal/VcDetailModal.tsx";
+import {useMasca} from "../masca/utility.ts";
 
 function exampleItemList() {
     const result: ItemParam[] = []
