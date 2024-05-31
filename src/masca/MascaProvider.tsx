@@ -1,8 +1,8 @@
 import {createContext, ReactNode, useEffect, useRef, useState} from "react";
 import {useAccount} from "wagmi";
-import {connectMasca} from "./utility.ts";
 import {MascaApi} from "@blockchain-lab-um/masca-connector";
 import toast from "../toast.ts";
+import {connectMasca} from "./utility.ts";
 
 interface Param {
     children: ReactNode

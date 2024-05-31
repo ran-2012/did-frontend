@@ -1,11 +1,11 @@
 import {VerifiableCredential} from "@veramo/core";
-import {VcUtility} from "../veramo/utility.ts";
 import {Button, Card, Descriptions, Modal, Spin, Table, TableColumnsType, Tag, Tooltip} from 'antd'
 import {LoadingOutlined} from '@ant-design/icons';
 import React, {useEffect, useMemo, useState} from "react";
 import dayjs from 'dayjs';
-import toast from "../toast.ts";
 import {isSuccess} from "@blockchain-lab-um/masca-connector";
+import toast from "../toast.ts";
+import {VcUtility} from "../veramo/utility.ts";
 import {useMasca} from "../masca/utility.ts";
 
 interface Param {

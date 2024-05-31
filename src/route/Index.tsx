@@ -1,11 +1,11 @@
-import KeyValueList, {ItemParam} from "../component/KeyValueList.tsx";
-import {createTestCredential, getDid} from "../veramo/utility.ts";
 import {useAccount} from "wagmi";
-import toast from "../toast.ts";
 import {useEffect, useState} from "react";
 import {isSuccess} from "@blockchain-lab-um/masca-connector";
 import {VerifiableCredential} from "@veramo/core";
 import {Button, Flex} from "antd";
+import toast from "../toast.ts";
+import {createTestCredential, getDid} from "../veramo/utility.ts";
+import KeyValueList, {ItemParam} from "../component/KeyValueList.tsx";
 import VcDetailModal from "../modal/VcDetailModal.tsx";
 import {useMasca} from "../masca/utility.ts";
 

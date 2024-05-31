@@ -6,9 +6,9 @@ import {
     Result
 } from '@blockchain-lab-um/masca-connector';
 import {Hex} from "viem";
+import {useContext} from "react";
 import toast from "../toast.ts";
 import {MascaContext} from "./MascaProvider.tsx";
-import {useContext} from "react";
 
 // VC with metadata which is used for managing vc storage in snap
 export type VC = QueryCredentialsRequestResult;

@@ -1,5 +1,5 @@
-import Tile from "./tile.tsx";
 import React, {Component, createRef} from "react";
+import Tile from "./tile.tsx";
 import './styles.css'
 
 class FieldParam {

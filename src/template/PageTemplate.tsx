@@ -1,8 +1,8 @@
 import {useLoaderData} from 'react-router-dom'
-import {Web3Provider} from "../component/Web3Provider.tsx";
-import NavigationBar from "../component/NavigationBar.tsx";
 import React, {ReactNode} from "react";
 import {Flex, Layout} from "antd";
+import {Web3Provider} from "../component/Web3Provider.tsx";
+import NavigationBar from "../component/NavigationBar.tsx";
 
 function PageTemplate() {
     const content = useLoaderData() as ReactNode;

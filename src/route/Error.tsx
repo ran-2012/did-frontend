@@ -1,5 +1,4 @@
-import {useRouteError} from 'react-router-dom'
-import {Link} from 'react-router-dom'
+import {useRouteError,Link} from 'react-router-dom'
 
 function Error() {
     const error = useRouteError() as { [key: string]: string | null };
