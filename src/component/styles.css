@@ -20,6 +20,10 @@
     vertical-align: middle;
 }
 
-.tile-text{
+.tile-text {
     margin: auto;
+}
+
+.hover:hover {
+    background-color: #eeeeee;
 }

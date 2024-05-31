@@ -1,8 +1,17 @@
-import {enableMasca, isError, MascaApi, Result} from '@blockchain-lab-um/masca-connector';
+import {
+    enableMasca,
+    isError,
+    MascaApi,
+    QueryCredentialsRequestResult,
+    Result
+} from '@blockchain-lab-um/masca-connector';
 import {Hex} from "viem";
 import toast from "../toast.ts";
 import {MascaContext} from "./MascaProvider.tsx";
 import {useContext} from "react";
+
+// VC with metadata which is used for managing vc storage in snap
+export type VC = QueryCredentialsRequestResult;
 
 async function connectMasca(address: Hex) {
     const enableResult = await enableMasca(address, {
@@ -20,7 +29,7 @@ async function connectMasca(address: Hex) {
     }
 }
 
-interface CallWrapperParam {
+export interface CallWrapperParam {
     infoMsg?: string
     successMsg?: string
     errorMsg?: string,
@@ -59,7 +68,9 @@ async function _callWrapper<Data>(promise: Promise<Result<Data>> | undefined, pa
     if (param.infoMsg) {
         toast.info(param.infoMsg)
     }
+    param.isLoading?.(true);
     const res = await promise;
+    param.isLoading?.(false);
     if (!res) {
         console.error("No response")
         return {
