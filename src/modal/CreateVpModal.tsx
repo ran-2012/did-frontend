@@ -45,8 +45,8 @@ function CreateVpModal(param: Param) {
 
             <List>
                 {param.vcList.map((vc, index) => {
-                    return (<>
-                        <Card className={'mb-2'} title={(<>
+                    return (
+                        <Card key={index} className={'mb-2'} title={(<>
                             <span
                                 className={'fs-5 me-2'}>{index}
                             </span>
@@ -61,7 +61,7 @@ function CreateVpModal(param: Param) {
                                 </Descriptions.Item>
                             </Descriptions>
                         </Card>
-                    </>)
+                    )
                 })}
             </List>
         </Modal>
