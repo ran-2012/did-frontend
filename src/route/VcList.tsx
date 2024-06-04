@@ -1,7 +1,7 @@
 import {useRef, useState} from "react";
 import {Button, Checkbox, Flex, GetProp, List, Tooltip} from "antd";
 import {isSuccess} from "@blockchain-lab-um/masca-connector";
-import {VerifiableCredential} from "@veramo/core";
+import {VerifiableCredential, VerifiablePresentation} from "@veramo/core";
 import {QrcodeOutlined} from "@ant-design/icons";
 import {CheckboxValueType} from "antd/es/checkbox/Group";
 import VcDetailModal from "../modal/VcDetailModal.tsx";
@@ -13,6 +13,7 @@ import QrCodeModal from "../modal/QrCodeModal.tsx";
 import {compressToBase64} from "../utility/compress.ts";
 
 import '../component/styles.css'
+import CreateVpModal from "../modal/CreateVpModal.tsx";
 
 interface Param {
 
@@ -31,13 +32,21 @@ type OnCheckChange = GetProp<typeof Checkbox.Group, 'onChange'>;
 function VcList(param: Param) {
     const mosca = useMasca();
     const mascaWrapper = useMascaCallWrapper();
+
     const [currentVc, setCurrentVc] = useState<VC>(getTestVc)
     const [isLoading, setIsLoading] = useState(false)
+
     const [vcList, setVcList] = useState<VC[]>([])
     const [isShowVcModal, setIsShowVcModal] = useState(false);
-    const [isShowJsonModal, setIsShowJsonModal] = useState(false);
+
+    const [jsonStr, setJsonStr] = useState('' as string)
+    const [isShowJsonModal, _setIsShowJsonModal] = useState(false);
+
     const [isShowDeleteConfirmModal, setIsShowDeleteConfirmModal] = useState(false);
     const [isShowQrCodeModal, setIsShowQrCodeModal] = useState(false);
+    const [selectedVcList, setSelectedVcList] = useState<VC[]>([]);
+    const [isShowCreateVpModal, setIsShowCreateVpModal] = useState(false);
+
     const selected = useRef<number[]>([])
     const [selectedCount, setSelectedCount] = useState(0)
 
@@ -50,6 +59,7 @@ function VcList(param: Param) {
             }
         }
         setSelectedCount(selected.current.length)
+        setSelectedVcList(selected.current.map(index => vcList[index]))
     }
 
     async function loadCredential() {
@@ -94,6 +104,11 @@ function VcList(param: Param) {
         </p>)
     }
 
+    function showJsonModal(data: object) {
+        setJsonStr(JSON.stringify(data, null, 2))
+        _setIsShowJsonModal(true)
+    }
+
     function showQrCodeModal() {
 
     }
@@ -107,7 +122,10 @@ function VcList(param: Param) {
                     <Button size={'large'} type={'primary'} className={'me-2'} onClick={loadCredential}>Load
                         Credential</Button>
                     <Tooltip title={'Select at least 1 Credential to create Presentation'}>
-                        <Button size={'large'} type={'primary'} disabled={selectedCount == 0}>
+                        <Button size={'large'} type={'primary'} disabled={selectedCount == 0}
+                                onClick={() => {
+                                    setIsShowCreateVpModal(true)
+                                }}>
                             Create Presentation
                         </Button>
                     </Tooltip>
@@ -119,7 +137,7 @@ function VcList(param: Param) {
                         Demo Credential
                     </Button>
                     <Button size={'large'} className={''} onClick={() => {
-                        setIsShowJsonModal(true)
+                        showJsonModal(getTestVc().data)
                     }}>
                         Demo Credential Full
                     </Button>
@@ -148,7 +166,7 @@ function VcList(param: Param) {
                                   }}>Detail</a>,
                                   <a className={'text-decoration-none'} onClick={() => {
                                       updateCurrentVc(item)
-                                      setIsShowJsonModal(true)
+                                      showJsonModal(item.data)
                                   }}>Full Text</a>,
                                   <a className={'text-decoration-none'} onClick={() => {
                                       updateCurrentVc(item)
@@ -163,8 +181,8 @@ function VcList(param: Param) {
             </Checkbox.Group>
             <VcDetailModal vc={currentVc.data} title={'Verifiable Credential Detail'} show={isShowVcModal}
                            onClose={closeVcDetailModal}/>
-            <JsonRawModal show={isShowJsonModal} json={JSON.stringify(currentVc.data, null, 2)}
-                          onClose={() => setIsShowJsonModal(false)}/>
+            <JsonRawModal show={isShowJsonModal} json={jsonStr}
+                          onClose={() => _setIsShowJsonModal(false)}/>
             <OkCancelModal show={isShowDeleteConfirmModal} message={'Deletion is irreversible. Are you sure?'}
                            onOk={() => {
                                setIsShowDeleteConfirmModal(false)
@@ -177,6 +195,14 @@ function VcList(param: Param) {
                            onCancel={() => setIsShowDeleteConfirmModal(false)}/>
             <QrCodeModal show={isShowQrCodeModal} onClose={() => setIsShowQrCodeModal(false)}
                          qrString={compressToBase64(currentVc.data)}/>
+            <CreateVpModal show={isShowCreateVpModal} vcList={selectedVcList}
+                           onClose={() => {
+                               setIsShowCreateVpModal(false)
+                           }}
+                           onCreatedVp={(vp: VerifiablePresentation) => {
+                               setIsShowCreateVpModal(false)
+                               showJsonModal(vp)
+                           }}/>
         </Flex>
     );
 }

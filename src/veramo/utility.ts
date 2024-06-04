@@ -62,6 +62,9 @@ const VcUtility = {
         } else {
             return vc.type.join(separator);
         }
+    },
+    getIsExpired: (vc: VerifiableCredential) => {
+        return vc.expirationDate ? new Date(vc.expirationDate) < new Date() : true;
     }
 }
 

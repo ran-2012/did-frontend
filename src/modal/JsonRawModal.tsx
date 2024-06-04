@@ -1,5 +1,6 @@
 import {Button, Input, Modal} from "antd";
 import React from "react";
+import * as FileSaver from "file-saver";
 
 interface Param {
     show: boolean;
@@ -17,6 +18,11 @@ function JsonRawModal(param: Param) {
             title={param.title ? param.title : 'Credential Full Text'}
             onCancel={() => param.onClose()}
             footer={<>
+                <Button type={'default'}
+                        onClick={() => {
+                            const file = new Blob([param.json], {type: 'application/json'})
+                            FileSaver.saveAs(file, `${param.title ?? 'credential'}.json`)
+                        }}>Save</Button>
                 <Button type={'primary'} onClick={() => param.onClose()}>Close</Button>
             </>}>
             <Input.TextArea

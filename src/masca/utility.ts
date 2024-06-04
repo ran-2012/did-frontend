@@ -1,22 +1,39 @@
 import {
     enableMasca,
-    isError,
+    isError, Masca,
     MascaApi,
     QueryCredentialsRequestResult,
     Result
 } from '@blockchain-lab-um/masca-connector';
 import {Hex} from "viem";
 import {useContext} from "react";
+import {MetaMaskInpageProvider} from "@metamask/providers";
 import toast from "../toast.ts";
 import {MascaContext} from "./MascaProvider.tsx";
+import {MascaConfig} from "./config.ts";
 
 // VC with metadata which is used for managing vc storage in snap
 export type VC = QueryCredentialsRequestResult;
 
+async function checkInstalledMasca() {
+    const metaMaskProvider = window.ethereum as MetaMaskInpageProvider;
+    if (!metaMaskProvider) {
+        toast.error("MetaMask not installed")
+        return false;
+    }
+    const result = await metaMaskProvider.request({
+        method: 'wallet_getSnaps',
+        params: [],
+    }) as Map<string, { version: string, id: string }>
+
+    console.log(JSON.stringify(result, null, 2));
+}
+
 async function connectMasca(address: Hex) {
+
     const enableResult = await enableMasca(address, {
-        snapId: 'npm:@blockchain-lab-um/masca', // Defaults to `npm:@blockchain-lab-um/masca`
-        version: '1.2.2', // Defaults to the latest released version
+        snapId: MascaConfig.snapId, // Defaults to `npm:@blockchain-lab-um/masca`
+        version: MascaConfig.snapVersion, // Defaults to the latest released version
         supportedMethods: ['did:ethr', 'did:pkh'], // Defaults to all available methods
     });
 
@@ -25,6 +42,7 @@ async function connectMasca(address: Hex) {
         console.error(enableResult.error)
         throw new Error(enableResult.error);
     } else {
+        localStorage.setItem('masca-connected', '1');
         return enableResult.data.getMascaApi()
     }
 }

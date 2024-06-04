@@ -18,7 +18,7 @@ function OkCancelModal(param: Param) {
             title={param.title ? param.title : null}
             onOk={() => param.onOk?.()}
             onCancel={() => param.onCancel?.()}
-            footer={(_, {OkBtn, CancelBtn}) => {
+            footer={(_, {}) => {
                 return (
                     <>
                         <Button type={'primary'} onClick={param.onOk}>OK</Button>

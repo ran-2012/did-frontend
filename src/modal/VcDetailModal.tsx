@@ -6,7 +6,8 @@ import dayjs from 'dayjs';
 import {isSuccess} from "@blockchain-lab-um/masca-connector";
 import toast from "../toast.ts";
 import {VcUtility} from "../veramo/utility.ts";
-import {useMasca} from "../masca/utility.ts";
+import {useMasca, useMascaCallWrapper} from "../masca/utility.ts";
+import {ValidState, VcUiUtility} from "../veramo/uiUtility.tsx";
 
 interface Param {
     title?: string
@@ -21,23 +22,12 @@ interface SubjectData {
     value: string
 }
 
-enum ValidState {
-    Idle,
-    Verifying,
-    Valid,
-    Invalid,
-    Unknown,
-}
-
 function VcDetailModal(param: Param) {
     const masca = useMasca();
+    const callWrapper = useMascaCallWrapper();
     const credential = param.vc;
     const [isValid, setIsValid] = useState<ValidState>(ValidState.Idle);
     const [invalidReason, setInvalidReason] = useState<string>('');
-    const isNotExpired = useMemo(() => {
-        if (!credential.expirationDate) return true;
-        return Date.parse(credential.expirationDate) > Date.now();
-    }, [credential]);
 
     useEffect(() => {
         if (!param.show) return;
@@ -48,6 +38,7 @@ function VcDetailModal(param: Param) {
                 if (isSuccess(res)) {
                     setIsValid(ValidState.Valid);
                 } else {
+                    setInvalidReason(res.error);
                     setIsValid(ValidState.Invalid);
                 }
             } else {
@@ -86,52 +77,15 @@ function VcDetailModal(param: Param) {
         }
     }
 
-    function getIsExpired() {
-        return isNotExpired ?
-            (<Tag color={'blue'}>
-                Not expired
-            </Tag>) :
-            (<Tag color={'red'}>
-                Expired
-            </Tag>)
-    }
-
-    function getIsValid() {
-        switch (isValid) {
-            case ValidState.Idle:
-                return '';
-            case ValidState.Valid:
-                return (<Tag color={'blue'}>Valid</Tag>);
-            case ValidState.Invalid:
-                return (<Tooltip title={invalidReason}><Tag color={'red'}>Invalid</Tag></Tooltip>);
-            case ValidState.Verifying:
-                return (
-                    <Tooltip title={'Verifying...'}>
-                        <Spin indicator={<LoadingOutlined spin/>}/>
-                    </Tooltip>
-                );
-            case ValidState.Unknown:
-                return (<Tag style={{color: 'gray'}}>Unknown</Tag>)
-        }
-    }
-
     function saveCredential() {
         console.log("Saving")
-        if (masca.api) {
-            toast.info("Saving credential")
-            masca.api.saveCredential(credential).then((res) => {
-                if (isSuccess(res)) {
-                    toast.success("Credential saved")
-                } else {
-                    toast.error("Failed to save credential")
-                }
-            }).catch(() => {
-                toast.error("Failed to save credential")
-            })
-        } else {
-            console.log("Masca not found")
-            toast.error("Masca not connected")
-        }
+        callWrapper.call(masca.api?.saveCredential, {
+                infoMsg: "Saving credential",
+                successMsg: "Credential saved",
+                errorMsg: "Failed to save credential"
+            }, credential
+        ).catch(() => {
+        })
     }
 
     // DETAIL: TYPE, SUBJECT, ISSUER, DATES, IS_VALID
@@ -163,7 +117,7 @@ function VcDetailModal(param: Param) {
                             {getExpirationDate()}
                         </Descriptions.Item>
                         <Descriptions.Item label={'Status'}>
-                            {getIsExpired()}{getIsValid()}
+                            {VcUiUtility.getIsExpired(credential)}{VcUiUtility.getIsValid(isValid, invalidReason)}
                         </Descriptions.Item>
                         <Descriptions.Item label={'Subjects'}>
                             {' '}

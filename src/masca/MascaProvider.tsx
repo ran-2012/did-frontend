@@ -24,11 +24,19 @@ function MascaProvider(param: Param) {
 
     useEffect(() => {
         setTimeout(async () => {
+            if (mascaApi != null) {
+                return;
+            }
             try {
                 if (!isConnecting.current && isConnected && account.address) {
                     console.log("Reconnect to masca")
                     isConnecting.current = true;
-                    setMascaApi(await connectMasca(account.address))
+                    const api = (await connectMasca(account.address))
+                    setMascaApi(api)
+                    try {
+                        await api.addTrustedDapp(window.origin)
+                    } catch (_) {
+                    }
                     isConnecting.current = false;
                     toast.success('Connected to Masca')
                 }
