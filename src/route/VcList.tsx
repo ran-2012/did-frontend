@@ -3,7 +3,6 @@ import {Button, Checkbox, Flex, GetProp, List, Tooltip} from "antd";
 import {isSuccess} from "@blockchain-lab-um/masca-connector";
 import {VerifiableCredential, VerifiablePresentation} from "@veramo/core";
 import {QrcodeOutlined} from "@ant-design/icons";
-import {CheckboxValueType} from "antd/es/checkbox/Group";
 import VcDetailModal from "../modal/VcDetailModal.tsx";
 import {useMasca, useMascaCallWrapper, VC} from "../masca/utility.ts";
 import {VcUtility} from "../veramo/utility.ts";
@@ -50,7 +49,7 @@ function VcList(param: Param) {
     const selected = useRef<number[]>([])
     const [selectedCount, setSelectedCount] = useState(0)
 
-    const onChange: OnCheckChange = (checkValue: CheckboxValueType[]) => {
+    const onChange: OnCheckChange = (checkValue) => {
         console.log(checkValue);
         selected.current = []
         for (const checked of checkValue) {
