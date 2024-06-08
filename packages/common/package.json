@@ -1,5 +1,5 @@
 {
-    "name": "@did-demo/mylib",
+    "name": "@did-demo/common",
     "private": true,
     "version": "0.1.0",
     "description": "Common libs in DID demo",

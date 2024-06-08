@@ -7,8 +7,8 @@
     ],
     "link-workspace-packages": true,
     "scripts": {
-        "build-dep": "npm run build -w packages/mylib",
-        "dev": "npm run build -w packages/mylib && concurrently \"npm run dev -w packages/frontend\" \"npm run dev -w packages/backend\"",
+        "build-dep": "npm run build -w packages/common",
+        "dev": "npm run build -w packages/common && concurrently \\\"npm run dev -w packages/frontend\\\" \\\"npm run dev -w packages/backend\\\"",
         "dev-backend": "npm run dev -w packages/backend",
         "lint": "eslint . --ext .ts,.tsx --fix"
     },
