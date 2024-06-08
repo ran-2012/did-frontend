@@ -22,6 +22,7 @@ import {Resolver} from 'did-resolver';
 import {getResolver as didEnsResolver, type ProviderConfiguration,} from 'ens-did-resolver';
 import {JsonRpcProvider} from 'ethers';
 import {getResolver as didEthrResolver} from 'ethr-did-resolver';
+import {VerificationService} from "@blockchain-lab-um/extended-verification";
 
 export type Agent = TAgent<
     IDIDManager &
@@ -47,11 +48,14 @@ const networks = [
     {
         name: 'sepolia',
         provider: new JsonRpcProvider(
-            process.env.SEPOLIA_RPC_URL || 'https://sepolia.infura.io/v3/'
+            `https://sepolia.infura.io/v3/${import.meta.env.VITE_INFURA_ID}`
         ),
-        chainId: '0xaa36a7',
+        chainId: 11155111,
     },
 ];
+
+
+
 
 export const getAgent = async (): Promise<Agent> => {
     return createAgent<Agent>({

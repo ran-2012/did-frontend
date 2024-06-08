@@ -12,14 +12,29 @@ export default defineConfig(({command, mode}) => {
             console.log(key, process.env[key])
         }
     }
+    let alias = {}
+    // Workaround for vite not resolving ethr-did-resolver
+    if (mode == "development") {
+        alias = {
+            "ethr-did-resolver": path.resolve(
+                "./node_modules/ethr-did-resolver/src/index.ts"
+            ),
+        };
+    }
 
     return {
         plugins: [react()],
         server: {
+            port: 3080,
             watch: {
                 usePolling: true
             }
+        },
+        build: {
+            sourcemap: 'inline'
+        },
+        resolve: {
+            alias,
         }
-
     }
 })
