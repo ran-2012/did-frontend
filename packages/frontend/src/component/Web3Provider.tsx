@@ -4,6 +4,7 @@ import {ConnectKitProvider} from "connectkit";
 import {ReactNode} from "react";
 import {config} from '../wagmi/config.ts'
 import MascaProvider from "../masca/MascaProvider.tsx";
+import VeramoProvider from "../veramo/VeramoProvider.tsx";
 
 const queryClient = new QueryClient();
 
@@ -16,7 +17,9 @@ export const Web3Provider = (param: Param) => {
         <WagmiProvider config={config}>
             <QueryClientProvider client={queryClient}>
                 <ConnectKitProvider theme="auto" options={{}}>
-                    <MascaProvider>{param.children}</MascaProvider>
+                    <VeramoProvider>
+                        <MascaProvider>{param.children}</MascaProvider>
+                    </VeramoProvider>
                 </ConnectKitProvider>
             </QueryClientProvider>
         </WagmiProvider>
