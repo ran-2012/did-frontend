@@ -17,3 +17,12 @@ test('encrypt test', async () => {
     const decrypted = Crypto.decrypt(encrypted, key.sk);
     expect(decrypted).toEqual('hello');
 })
+
+test('encrypt default key', async () => {
+    const key = await Crypto.createKeyPair();
+    const defaultSeed = Crypto.loadDefaultSeed();
+    console.log(`default Seed ${defaultSeed}`);
+    const encrypted = Crypto.encrypt('hello');
+    const decrypted = Crypto.decrypt(encrypted);
+    expect(decrypted).toEqual('hello');
+})

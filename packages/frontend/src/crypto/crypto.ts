@@ -42,7 +42,7 @@ function saveDefaultSeed(seed: string) {
     LocalStorage.save('keyPairSeed', seed);
 }
 
-function loadDefaultSeed(): string | null {
+export function loadDefaultSeed(): string | null {
     return LocalStorage.load('keyPairSeed') as string;
 }
 
@@ -63,7 +63,7 @@ function loadPublicKey(seed: string | null = null): pki.rsa.PublicKey | null {
     if (seed == null) {
         throw new Error('No seed provided')
     }
-    const str = LocalStorage.load(`publicKey-${Crypto.sha256(seed)}`) as string;
+    const str = LocalStorage.load(`publicKey:${Crypto.sha256(seed)}`) as string;
     if (str == null) {
         return null;
     } else {
@@ -78,7 +78,7 @@ function loadPrivateKey(seed: string | null = null): pki.rsa.PrivateKey | null {
     if (seed == null) {
         throw new Error('No seed provided')
     }
-    const str = LocalStorage.load(`privateKey-${Crypto.sha256(seed)}`) as string;
+    const str = LocalStorage.load(`privateKey:${Crypto.sha256(seed)}`) as string;
     if (str == null) {
         return null;
     } else {

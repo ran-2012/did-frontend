@@ -1,4 +1,4 @@
-import {jsbn, pki, random, md} from 'node-forge';
+import {jsbn, md, pki, random} from 'node-forge';
 import * as lz from 'lz-string';
 
 /**
@@ -15,11 +15,11 @@ function createKeyPair(seed: string | null = null) {
 }
 
 function encryptMessage(message: string, publicKey: pki.rsa.PublicKey) {
-    return publicKey.encrypt(message);
+    return publicKey.encrypt(message, 'RSAES-PKCS1-V1_5');
 }
 
 function decryptMessage(encrypted: string, privateKey: pki.rsa.PrivateKey) {
-    return privateKey.decrypt(encrypted);
+    return privateKey.decrypt(encrypted, 'RSAES-PKCS1-V1_5');
 }
 
 function exportPublicKey(publicKey: pki.rsa.PublicKey) {
@@ -31,7 +31,16 @@ function exportPublicKey(publicKey: pki.rsa.PublicKey) {
  * @param privateKey
  */
 function exportPrivateKey(privateKey: pki.rsa.PrivateKey) {
-    return lz.compressToBase64(JSON.stringify(privateKey));
+    return lz.compressToBase64(JSON.stringify({
+        n: privateKey.n.toString(16),
+        e: privateKey.e.toString(16),
+        d: privateKey.d.toString(16),
+        p: privateKey.p.toString(16),
+        q: privateKey.q.toString(16),
+        dP: privateKey.dP.toString(16),
+        dQ: privateKey.dQ.toString(16),
+        qInv: privateKey.qInv.toString(16)
+    }));
 }
 
 function importPublicKey(data: string) {
@@ -40,8 +49,17 @@ function importPublicKey(data: string) {
 }
 
 export function importPrivateKey(data: string) {
-    return JSON.parse(lz.decompressFromBase64(data)) as pki.rsa.PrivateKey;
-
+    const pk = JSON.parse(lz.decompressFromBase64(data));
+    return pki.rsa.setPrivateKey(
+        new jsbn.BigInteger(pk.n, 16),
+        new jsbn.BigInteger(pk.e, 16),
+        new jsbn.BigInteger(pk.d, 16),
+        new jsbn.BigInteger(pk.p, 16),
+        new jsbn.BigInteger(pk.q, 16),
+        new jsbn.BigInteger(pk.dP, 16),
+        new jsbn.BigInteger(pk.dQ, 16),
+        new jsbn.BigInteger(pk.qInv, 16)
+    );
 }
 
 /**
