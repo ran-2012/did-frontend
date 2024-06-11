@@ -1,4 +1,4 @@
-import {jsbn, pki, random,} from 'node-forge';
+import {jsbn, pki, random, md} from 'node-forge';
 import * as lz from 'lz-string';
 
 /**
@@ -31,13 +31,28 @@ function exportPublicKey(publicKey: pki.rsa.PublicKey) {
  * @param privateKey
  */
 function exportPrivateKey(privateKey: pki.rsa.PrivateKey) {
-
     return lz.compressToBase64(JSON.stringify(privateKey));
 }
 
 function importPublicKey(data: string) {
     const json = JSON.parse(lz.decompressFromBase64(data));
     return pki.rsa.setPublicKey(new jsbn.BigInteger(json.n, 16), new jsbn.BigInteger(json.e, 16));
+}
+
+export function importPrivateKey(data: string) {
+    return JSON.parse(lz.decompressFromBase64(data)) as pki.rsa.PrivateKey;
+
+}
+
+/**
+ * Hash of target string
+ * @param str
+ * @return {string} sha256 hash hex
+ */
+export function sha256(str: string): string {
+    const sha = md.sha256.create();
+    sha.update(str);
+    return sha.digest().toHex();
 }
 
 export {

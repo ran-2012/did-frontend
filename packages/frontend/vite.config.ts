@@ -35,6 +35,9 @@ export default defineConfig(({command, mode}) => {
         },
         resolve: {
             alias,
+        },
+        test: {
+            include: ['test/**/*.ts']
         }
     }
 })
