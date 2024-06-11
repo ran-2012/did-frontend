@@ -1,22 +1,34 @@
-import {SiweMessage} from "siwe";
+import {createSiweMessage as _createSiweMessage} from "viem/siwe";
+import {Address} from "viem";
 
-export interface Result<C> {
-    data: C;
-}
+const API_HOST = 'http://localhost:3000'
 
-function createSiweMessage(address: string, chainId: string){
-    const message = new SiweMessage({
-
+export function createSiweMessage(address: Address, chainId: number, nonce: string,) {
+    return _createSiweMessage({
+        domain: location.host,
+        address: address as Address,
+        chainId,
+        statement: 'Login in to use credential transfer',
+        uri: window.location.href,
+        nonce,
+        version: '1',
     })
 }
 
+function checkResponse(res: Response) {
+    if (!res.ok) {
+        throw new Error(`Response not ok: ${res.status}`);
+    }
+}
 
 export class Api {
     async getNonce(): Promise<string> {
-        const res = await fetch('/login/nonce', {
+        const res = await fetch(API_HOST + '/login/nonce', {
             method: 'GET'
         })
-        return (await res.json() as Result<string>).data;
+        console.log(res);
+        checkResponse(res);
+        return (await res.json()).nonce;
     }
 
     async login() {

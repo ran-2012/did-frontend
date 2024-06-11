@@ -154,12 +154,12 @@ importers:
       '@blockchain-lab-um/did-provider-key':
         specifier: ^1.1.0-beta.1
         version: 1.1.0-beta.1(bufferutil@4.0.8)(encoding@0.1.13)
-      '@blockchain-lab-um/extended-verification':
-        specifier: 0.2.0-beta.1
-        version: 0.2.0-beta.1(@iden3/js-crypto@1.1.0)(@iden3/js-iden3-core@1.3.1(@iden3/js-crypto@1.1.0))(@iden3/js-jsonld-merklization@1.2.0(@iden3/js-crypto@1.1.0)(@iden3/js-merkletree@1.2.0(@iden3/js-crypto@1.1.0)(idb-keyval@6.2.1))(web-streams-polyfill@3.3.3))(@iden3/js-jwz@1.4.0(@iden3/js-crypto@1.1.0)(@iden3/js-iden3-core@1.3.1(@iden3/js-crypto@1.1.0))(@iden3/js-merkletree@1.2.0(@iden3/js-crypto@1.1.0)(idb-keyval@6.2.1))(ffjavascript@0.2.63)(rfc4648@1.5.3)(snarkjs@0.7.3))(@iden3/js-merkletree@1.2.0(@iden3/js-crypto@1.1.0)(idb-keyval@6.2.1))(bufferutil@4.0.8)(encoding@0.1.13)(expo-crypto@13.0.2(expo@51.0.11(@babel/core@7.24.7)(@babel/preset-env@7.24.7(@babel/core@7.24.7))(bufferutil@4.0.8)(encoding@0.1.13)))(expo@51.0.11(@babel/core@7.24.7)(@babel/preset-env@7.24.7(@babel/core@7.24.7))(bufferutil@4.0.8)(encoding@0.1.13))(ffjavascript@0.2.63)(msrcrypto@1.5.8)(react-native-securerandom@0.1.1(react-native@0.74.2(@babel/core@7.24.7)(@babel/preset-env@7.24.7(@babel/core@7.24.7))(@types/react@18.3.3)(bufferutil@4.0.8)(encoding@0.1.13)(react@18.3.1)))(react-native@0.74.2(@babel/core@7.24.7)(@babel/preset-env@7.24.7(@babel/core@7.24.7))(@types/react@18.3.3)(bufferutil@4.0.8)(encoding@0.1.13)(react@18.3.1))(rfc4648@1.5.3)(snarkjs@0.7.3)(typescript@5.4.5)(web-streams-polyfill@3.3.3)
       '@blockchain-lab-um/masca-connector':
         specifier: ^1.4.0-beta.1
         version: 1.4.0-beta.1(@iden3/js-crypto@1.1.0)(@iden3/js-iden3-core@1.3.1(@iden3/js-crypto@1.1.0))(@iden3/js-jsonld-merklization@1.2.0(@iden3/js-crypto@1.1.0)(@iden3/js-merkletree@1.2.0(@iden3/js-crypto@1.1.0)(idb-keyval@6.2.1))(web-streams-polyfill@3.3.3))(@iden3/js-jwz@1.4.0(@iden3/js-crypto@1.1.0)(@iden3/js-iden3-core@1.3.1(@iden3/js-crypto@1.1.0))(@iden3/js-merkletree@1.2.0(@iden3/js-crypto@1.1.0)(idb-keyval@6.2.1))(ffjavascript@0.2.63)(rfc4648@1.5.3)(snarkjs@0.7.3))(@iden3/js-merkletree@1.2.0(@iden3/js-crypto@1.1.0)(idb-keyval@6.2.1))(bufferutil@4.0.8)(encoding@0.1.13)(ffjavascript@0.2.63)(rfc4648@1.5.3)(snarkjs@0.7.3)(typescript@5.4.5)(web-streams-polyfill@3.3.3)
+      '@blockchain-lab-um/utils':
+        specifier: 1.4.0-beta.1
+        version: 1.4.0-beta.1(bufferutil@4.0.8)(encoding@0.1.13)
       '@did-demo/common':
         specifier: workspace:^0.1.0
         version: link:../common
@@ -211,6 +211,9 @@ importers:
       '@veramo/utils':
         specifier: ^6.0.0
         version: 6.0.0(bufferutil@4.0.8)(encoding@0.1.13)
+      '@wagmi/core':
+        specifier: ^2.10.5
+        version: 2.10.5(@tanstack/query-core@5.40.0)(@types/react@18.3.3)(bufferutil@4.0.8)(react@18.3.1)(typescript@5.4.5)(viem@2.13.7(bufferutil@4.0.8)(typescript@5.4.5))
       antd:
         specifier: ^5.17.3
         version: 5.18.0(date-fns@3.6.0)(moment@2.30.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -1114,9 +1117,6 @@ packages:
 
   '@blockchain-lab-um/did-provider-key@1.1.0-beta.1':
     resolution: {integrity: sha512-fkjQ0stPpTK/Nz1cyl9pqDDuadTiPZL6GoR81bXs60p3cSnW09OVEw87cnKbGPV6U85q6e8aseFeAn7AHS7CGA==}
-
-  '@blockchain-lab-um/extended-verification@0.2.0-beta.1':
-    resolution: {integrity: sha512-Alyc2QvILzcEdNXuVXkcHAA5GI37TJSUm89dHMNcFElcHS4NsDw1Is59qqCQpwNrskviXUStGtwFhLDVVmGQZQ==}
 
   '@blockchain-lab-um/masca-connector@1.4.0-beta.1':
     resolution: {integrity: sha512-PVaEVXdMbWw7/lP8avzBdWmxzpFJ+wG4Yh5i67fOtM3npfZQiTAiO3HbTsZWDuAPcQjOKebe1YkeqTTi6wyzgw==}
@@ -2806,8 +2806,8 @@ packages:
     peerDependencies:
       graphql: ^0.11.0 || ^0.12.0 || ^0.13.0 || ^14.0.0 || ^15.0.0
 
-  '@veramo-community/lds-ecdsa-secp256k1-recovery2020@git+https://git@github.com:uport-project/EcdsaSecp256k1RecoverySignature2020.git#ab0db52de6f4e6663ef271a48009ba26e688ef9b':
-    resolution: {commit: ab0db52de6f4e6663ef271a48009ba26e688ef9b, repo: git@github.com:uport-project/EcdsaSecp256k1RecoverySignature2020.git, type: git}
+  '@veramo-community/lds-ecdsa-secp256k1-recovery2020@https://codeload.github.com/uport-project/EcdsaSecp256k1RecoverySignature2020/tar.gz/ab0db52de6f4e6663ef271a48009ba26e688ef9b':
+    resolution: {tarball: https://codeload.github.com/uport-project/EcdsaSecp256k1RecoverySignature2020/tar.gz/ab0db52de6f4e6663ef271a48009ba26e688ef9b}
     version: 0.0.8
 
   '@veramo/cli@6.0.0':
@@ -4485,9 +4485,6 @@ packages:
     resolution: {integrity: sha512-zrFbmQRlraM+cU5mE4CZTLBurZTs2gdp2ld0nG/f3ecBK+x6lZ69KSxBqZ4NjclxwfTxl5LeNufcBbMsTdY53Q==}
     engines: {node: '>=14.0.0'}
 
-  ethr-did-resolver@10.1.3:
-    resolution: {integrity: sha512-JQuZwvKqdo4waiFo4CcjaDZ3iFMh/FRFR/wDHiqUF4MfziMxSx35L22ESoSEsuyweP30g/6bVHv6nlRW5zUg3w==}
-
   ethr-did-resolver@10.1.5:
     resolution: {integrity: sha512-wVCKhF6qQo2IewH9ui4lRBixbvT/A6szZFQoJkfvjP6EU/3MSb4KOP5QNpM37zmFU/rQGjHNt7bF13fNcmZ6wQ==}
 
@@ -5622,8 +5619,8 @@ packages:
     resolution: {integrity: sha512-tYfKpWL56meSJCHS91Ph0+EUThHZOZ8bKuboME4998SF+Kkukp2PhCPdRCvA7tsGUKr9FvSoyIRqJPuImBcBuA==}
     engines: {node: '>=14'}
 
-  jsonld@git+https://git@github.com:digitalcredentials/jsonld.js.git#17f2c35f85d176231d9c8620d39144e845c15e91:
-    resolution: {commit: 17f2c35f85d176231d9c8620d39144e845c15e91, repo: git@github.com:digitalcredentials/jsonld.js.git, type: git}
+  jsonld@https://codeload.github.com/digitalcredentials/jsonld.js/tar.gz/17f2c35f85d176231d9c8620d39144e845c15e91:
+    resolution: {tarball: https://codeload.github.com/digitalcredentials/jsonld.js/tar.gz/17f2c35f85d176231d9c8620d39144e845c15e91}
     version: 8.3.3-0
     engines: {node: '>=14'}
 
@@ -10164,46 +10161,6 @@ snapshots:
       - supports-color
       - utf-8-validate
 
-  ? '@blockchain-lab-um/extended-verification@0.2.0-beta.1(@iden3/js-crypto@1.1.0)(@iden3/js-iden3-core@1.3.1(@iden3/js-crypto@1.1.0))(@iden3/js-jsonld-merklization@1.2.0(@iden3/js-crypto@1.1.0)(@iden3/js-merkletree@1.2.0(@iden3/js-crypto@1.1.0)(idb-keyval@6.2.1))(web-streams-polyfill@3.3.3))(@iden3/js-jwz@1.4.0(@iden3/js-crypto@1.1.0)(@iden3/js-iden3-core@1.3.1(@iden3/js-crypto@1.1.0))(@iden3/js-merkletree@1.2.0(@iden3/js-crypto@1.1.0)(idb-keyval@6.2.1))(ffjavascript@0.2.63)(rfc4648@1.5.3)(snarkjs@0.7.3))(@iden3/js-merkletree@1.2.0(@iden3/js-crypto@1.1.0)(idb-keyval@6.2.1))(bufferutil@4.0.8)(encoding@0.1.13)(expo-crypto@13.0.2(expo@51.0.11(@babel/core@7.24.7)(@babel/preset-env@7.24.7(@babel/core@7.24.7))(bufferutil@4.0.8)(encoding@0.1.13)))(expo@51.0.11(@babel/core@7.24.7)(@babel/preset-env@7.24.7(@babel/core@7.24.7))(bufferutil@4.0.8)(encoding@0.1.13))(ffjavascript@0.2.63)(msrcrypto@1.5.8)(react-native-securerandom@0.1.1(react-native@0.74.2(@babel/core@7.24.7)(@babel/preset-env@7.24.7(@babel/core@7.24.7))(@types/react@18.3.3)(bufferutil@4.0.8)(encoding@0.1.13)(react@18.3.1)))(react-native@0.74.2(@babel/core@7.24.7)(@babel/preset-env@7.24.7(@babel/core@7.24.7))(@types/react@18.3.3)(bufferutil@4.0.8)(encoding@0.1.13)(react@18.3.1))(rfc4648@1.5.3)(snarkjs@0.7.3)(typescript@5.4.5)(web-streams-polyfill@3.3.3)'
-  : dependencies:
-      '@blockchain-lab-um/did-provider-key': 1.1.0-beta.1(bufferutil@4.0.8)(encoding@0.1.13)
-      '@blockchain-lab-um/masca-types': 1.4.0-beta.1(@iden3/js-crypto@1.1.0)(@iden3/js-iden3-core@1.3.1(@iden3/js-crypto@1.1.0))(@iden3/js-jsonld-merklization@1.2.0(@iden3/js-crypto@1.1.0)(@iden3/js-merkletree@1.2.0(@iden3/js-crypto@1.1.0)(idb-keyval@6.2.1))(web-streams-polyfill@3.3.3))(@iden3/js-jwz@1.4.0(@iden3/js-crypto@1.1.0)(@iden3/js-iden3-core@1.3.1(@iden3/js-crypto@1.1.0))(@iden3/js-merkletree@1.2.0(@iden3/js-crypto@1.1.0)(idb-keyval@6.2.1))(ffjavascript@0.2.63)(rfc4648@1.5.3)(snarkjs@0.7.3))(@iden3/js-merkletree@1.2.0(@iden3/js-crypto@1.1.0)(idb-keyval@6.2.1))(bufferutil@4.0.8)(encoding@0.1.13)(ffjavascript@0.2.63)(rfc4648@1.5.3)(snarkjs@0.7.3)(typescript@5.4.5)(web-streams-polyfill@3.3.3)
-      '@blockchain-lab-um/utils': 1.4.0-beta.1(bufferutil@4.0.8)(encoding@0.1.13)
-      '@veramo/core': 6.0.0
-      '@veramo/credential-eip712': 6.0.0(bufferutil@4.0.8)(encoding@0.1.13)
-      '@veramo/credential-status': 6.0.0(bufferutil@4.0.8)(encoding@0.1.13)
-      '@veramo/credential-w3c': 6.0.0(bufferutil@4.0.8)(encoding@0.1.13)(expo-crypto@13.0.2(expo@51.0.11(@babel/core@7.24.7)(@babel/preset-env@7.24.7(@babel/core@7.24.7))(bufferutil@4.0.8)(encoding@0.1.13)))(expo@51.0.11(@babel/core@7.24.7)(@babel/preset-env@7.24.7(@babel/core@7.24.7))(bufferutil@4.0.8)(encoding@0.1.13))(msrcrypto@1.5.8)(react-native-securerandom@0.1.1(react-native@0.74.2(@babel/core@7.24.7)(@babel/preset-env@7.24.7(@babel/core@7.24.7))(@types/react@18.3.3)(bufferutil@4.0.8)(encoding@0.1.13)(react@18.3.1)))(react-native@0.74.2(@babel/core@7.24.7)(@babel/preset-env@7.24.7(@babel/core@7.24.7))(@types/react@18.3.3)(bufferutil@4.0.8)(encoding@0.1.13)(react@18.3.1))(web-streams-polyfill@3.3.3)
-      '@veramo/did-provider-jwk': 6.0.0(bufferutil@4.0.8)(encoding@0.1.13)
-      '@veramo/did-provider-pkh': 6.0.0(bufferutil@4.0.8)
-      '@veramo/did-resolver': 6.0.0(bufferutil@4.0.8)(encoding@0.1.13)
-      '@veramo/utils': 6.0.0(bufferutil@4.0.8)(encoding@0.1.13)
-      did-jwt-vc: 4.0.4
-      did-resolver: 4.1.0
-      ens-did-resolver: 1.0.4(bufferutil@4.0.8)
-      ethers: 6.13.0(bufferutil@4.0.8)
-      ethr-did-resolver: 10.1.3(bufferutil@4.0.8)
-    transitivePeerDependencies:
-      - '@iden3/js-crypto'
-      - '@iden3/js-iden3-core'
-      - '@iden3/js-jsonld-merklization'
-      - '@iden3/js-jwz'
-      - '@iden3/js-merkletree'
-      - bufferutil
-      - domexception
-      - encoding
-      - expo
-      - expo-crypto
-      - ffjavascript
-      - msrcrypto
-      - react-native
-      - react-native-securerandom
-      - rfc4648
-      - snarkjs
-      - supports-color
-      - typescript
-      - utf-8-validate
-      - web-streams-polyfill
-
   '@blockchain-lab-um/masca-connector@1.4.0-beta.1(@iden3/js-crypto@1.1.0)(@iden3/js-iden3-core@1.3.1(@iden3/js-crypto@1.1.0))(@iden3/js-jsonld-merklization@1.2.0(@iden3/js-crypto@1.1.0)(@iden3/js-merkletree@1.2.0(@iden3/js-crypto@1.1.0)(idb-keyval@6.2.1))(web-streams-polyfill@3.3.3))(@iden3/js-jwz@1.4.0(@iden3/js-crypto@1.1.0)(@iden3/js-iden3-core@1.3.1(@iden3/js-crypto@1.1.0))(@iden3/js-merkletree@1.2.0(@iden3/js-crypto@1.1.0)(idb-keyval@6.2.1))(ffjavascript@0.2.63)(rfc4648@1.5.3)(snarkjs@0.7.3))(@iden3/js-merkletree@1.2.0(@iden3/js-crypto@1.1.0)(idb-keyval@6.2.1))(bufferutil@4.0.8)(encoding@0.1.13)(ffjavascript@0.2.63)(rfc4648@1.5.3)(snarkjs@0.7.3)(typescript@5.4.5)(web-streams-polyfill@3.3.3)':
     dependencies:
       '@blockchain-lab-um/masca-types': 1.4.0-beta.1(@iden3/js-crypto@1.1.0)(@iden3/js-iden3-core@1.3.1(@iden3/js-crypto@1.1.0))(@iden3/js-jsonld-merklization@1.2.0(@iden3/js-crypto@1.1.0)(@iden3/js-merkletree@1.2.0(@iden3/js-crypto@1.1.0)(idb-keyval@6.2.1))(web-streams-polyfill@3.3.3))(@iden3/js-jwz@1.4.0(@iden3/js-crypto@1.1.0)(@iden3/js-iden3-core@1.3.1(@iden3/js-crypto@1.1.0))(@iden3/js-merkletree@1.2.0(@iden3/js-crypto@1.1.0)(idb-keyval@6.2.1))(ffjavascript@0.2.63)(rfc4648@1.5.3)(snarkjs@0.7.3))(@iden3/js-merkletree@1.2.0(@iden3/js-crypto@1.1.0)(idb-keyval@6.2.1))(bufferutil@4.0.8)(encoding@0.1.13)(ffjavascript@0.2.63)(rfc4648@1.5.3)(snarkjs@0.7.3)(typescript@5.4.5)(web-streams-polyfill@3.3.3)
@@ -10501,7 +10458,7 @@ snapshots:
       '@digitalbazaar/security-context': 1.0.1
       '@sphereon/isomorphic-webcrypto': 2.4.0-unstable.4(expo-crypto@13.0.2(expo@51.0.11(@babel/core@7.24.7)(@babel/preset-env@7.24.7(@babel/core@7.24.7))(bufferutil@4.0.8)(encoding@0.1.13)))(expo@51.0.11(@babel/core@7.24.7)(@babel/preset-env@7.24.7(@babel/core@7.24.7))(bufferutil@4.0.8)(encoding@0.1.13))(msrcrypto@1.5.8)(react-native-securerandom@0.1.1(react-native@0.74.2(@babel/core@7.24.7)(@babel/preset-env@7.24.7(@babel/core@7.24.7))(@types/react@18.3.3)(bufferutil@4.0.8)(encoding@0.1.13)(react@18.3.1)))
       fast-text-encoding: 1.0.6
-      jsonld: git+https://git@github.com:digitalcredentials/jsonld.js.git#17f2c35f85d176231d9c8620d39144e845c15e91
+      jsonld: https://codeload.github.com/digitalcredentials/jsonld.js/tar.gz/17f2c35f85d176231d9c8620d39144e845c15e91
       serialize-error: 8.1.0
     transitivePeerDependencies:
       - expo
@@ -10565,7 +10522,7 @@ snapshots:
       '@digitalcredentials/open-badges-context': 2.1.0
       credentials-context: 2.0.0
       fix-esm: 1.0.1
-      jsonld: git+https://git@github.com:digitalcredentials/jsonld.js.git#17f2c35f85d176231d9c8620d39144e845c15e91
+      jsonld: https://codeload.github.com/digitalcredentials/jsonld.js/tar.gz/17f2c35f85d176231d9c8620d39144e845c15e91
     transitivePeerDependencies:
       - expo
       - expo-crypto
@@ -12932,7 +12889,7 @@ snapshots:
       graphql: 15.8.0
       wonka: 4.0.15
 
-  '@veramo-community/lds-ecdsa-secp256k1-recovery2020@git+https://git@github.com:uport-project/EcdsaSecp256k1RecoverySignature2020.git#ab0db52de6f4e6663ef271a48009ba26e688ef9b(expo@51.0.11(@babel/core@7.24.7)(@babel/preset-env@7.24.7(@babel/core@7.24.7))(bufferutil@4.0.8)(encoding@0.1.13))(react-native@0.74.2(@babel/core@7.24.7)(@babel/preset-env@7.24.7(@babel/core@7.24.7))(@types/react@18.3.3)(bufferutil@4.0.8)(encoding@0.1.13)(react@18.3.1))(web-streams-polyfill@3.3.3)':
+  '@veramo-community/lds-ecdsa-secp256k1-recovery2020@https://codeload.github.com/uport-project/EcdsaSecp256k1RecoverySignature2020/tar.gz/ab0db52de6f4e6663ef271a48009ba26e688ef9b(expo@51.0.11(@babel/core@7.24.7)(@babel/preset-env@7.24.7(@babel/core@7.24.7))(bufferutil@4.0.8)(encoding@0.1.13))(react-native@0.74.2(@babel/core@7.24.7)(@babel/preset-env@7.24.7(@babel/core@7.24.7))(@types/react@18.3.3)(bufferutil@4.0.8)(encoding@0.1.13)(react@18.3.1))(web-streams-polyfill@3.3.3)':
     dependencies:
       '@bitauth/libauth': 1.19.1
       '@digitalcredentials/jsonld': 5.2.2(expo@51.0.11(@babel/core@7.24.7)(@babel/preset-env@7.24.7(@babel/core@7.24.7))(bufferutil@4.0.8)(encoding@0.1.13))(react-native@0.74.2(@babel/core@7.24.7)(@babel/preset-env@7.24.7(@babel/core@7.24.7))(@types/react@18.3.3)(bufferutil@4.0.8)(encoding@0.1.13)(react@18.3.1))(web-streams-polyfill@3.3.3)
@@ -13085,7 +13042,7 @@ snapshots:
       '@transmute/credentials-context': 0.7.0-unstable.82
       '@transmute/ed25519-signature-2018': 0.7.0-unstable.82(web-streams-polyfill@3.3.3)
       '@transmute/json-web-signature': 0.7.0-unstable.82(web-streams-polyfill@3.3.3)
-      '@veramo-community/lds-ecdsa-secp256k1-recovery2020': git+https://git@github.com:uport-project/EcdsaSecp256k1RecoverySignature2020.git#ab0db52de6f4e6663ef271a48009ba26e688ef9b(expo@51.0.11(@babel/core@7.24.7)(@babel/preset-env@7.24.7(@babel/core@7.24.7))(bufferutil@4.0.8)(encoding@0.1.13))(react-native@0.74.2(@babel/core@7.24.7)(@babel/preset-env@7.24.7(@babel/core@7.24.7))(@types/react@18.3.3)(bufferutil@4.0.8)(encoding@0.1.13)(react@18.3.1))(web-streams-polyfill@3.3.3)
+      '@veramo-community/lds-ecdsa-secp256k1-recovery2020': https://codeload.github.com/uport-project/EcdsaSecp256k1RecoverySignature2020/tar.gz/ab0db52de6f4e6663ef271a48009ba26e688ef9b(expo@51.0.11(@babel/core@7.24.7)(@babel/preset-env@7.24.7(@babel/core@7.24.7))(bufferutil@4.0.8)(encoding@0.1.13))(react-native@0.74.2(@babel/core@7.24.7)(@babel/preset-env@7.24.7(@babel/core@7.24.7))(@types/react@18.3.3)(bufferutil@4.0.8)(encoding@0.1.13)(react@18.3.1))(web-streams-polyfill@3.3.3)
       '@veramo/core-types': 6.0.0
       '@veramo/utils': 6.0.0(bufferutil@4.0.8)(encoding@0.1.13)
       cross-fetch: 4.0.0(encoding@0.1.13)
@@ -15656,14 +15613,6 @@ snapshots:
       - bufferutil
       - utf-8-validate
 
-  ethr-did-resolver@10.1.3(bufferutil@4.0.8):
-    dependencies:
-      did-resolver: 4.1.0
-      ethers: 6.13.0(bufferutil@4.0.8)
-    transitivePeerDependencies:
-      - bufferutil
-      - utf-8-validate
-
   ethr-did-resolver@10.1.5(bufferutil@4.0.8):
     dependencies:
       did-resolver: 4.1.0
@@ -17030,7 +16979,7 @@ snapshots:
     transitivePeerDependencies:
       - web-streams-polyfill
 
-  jsonld@git+https://git@github.com:digitalcredentials/jsonld.js.git#17f2c35f85d176231d9c8620d39144e845c15e91:
+  jsonld@https://codeload.github.com/digitalcredentials/jsonld.js/tar.gz/17f2c35f85d176231d9c8620d39144e845c15e91:
     dependencies:
       '@digitalbazaar/http-client': 4.1.1
       canonicalize: 1.0.8

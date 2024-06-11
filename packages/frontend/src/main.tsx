@@ -35,10 +35,10 @@ const router = createBrowserRouter([
 ])
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
-    <React.StrictMode>
+    <>
         <ToastContainer/>
         <ConfigProvider locale={enUS}>
             <RouterProvider router={router}/>
         </ConfigProvider>
-    </React.StrictMode>,
+    </>
 )
