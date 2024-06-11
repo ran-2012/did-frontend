@@ -12,8 +12,8 @@
     "dependencies": {
         "@ant-design/icons": "^5.3.7",
         "@blockchain-lab-um/did-provider-key": "^1.1.0-beta.1",
-        "@blockchain-lab-um/extended-verification": "0.2.0-beta.1",
         "@blockchain-lab-um/masca-connector": "^1.4.0-beta.1",
+        "@blockchain-lab-um/utils": "1.4.0-beta.1",
         "@did-demo/common": "workspace:^0.1.0",
         "@metamask/providers": "^17.0.0",
         "@tanstack/react-query": "^5.37.1",

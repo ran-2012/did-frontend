@@ -1,6 +1,6 @@
 import {createContext, ReactNode, useContext, useEffect, useState} from "react";
-import {VerificationService} from "@blockchain-lab-um/extended-verification";
 import {JsonRpcProvider} from "ethers";
+import {VerificationService} from "./Verification.service.ts";
 
 interface Param {
     children: ReactNode

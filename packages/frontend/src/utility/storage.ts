@@ -61,7 +61,7 @@ export class MemoryStorage extends Storage {
 }
 
 let _ls: Storage = new _LocalStorage();
-if (process.env.VITEST) {
+if (import.meta.env.VITEST) {
     _ls = new MemoryStorage();
 }
 
