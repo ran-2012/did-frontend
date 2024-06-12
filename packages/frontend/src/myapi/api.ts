@@ -1,5 +1,6 @@
 import {createSiweMessage as _createSiweMessage} from "viem/siwe";
 import {Address} from "viem";
+import {SiweMessage} from "siwe";
 
 const API_HOST = 'http://localhost:3000'
 
@@ -31,8 +32,20 @@ export class Api {
         return (await res.json()).nonce;
     }
 
-    async login() {
-
+    async verify(siweMessage: string, signature: string) {
+        const res = await fetch(API_HOST + '/login/verify', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                message: siweMessage,
+                signature
+            })
+        })
+        console.log(res);
+        checkResponse(res);
+        return (await res.json()).isValid;
     }
 }
 

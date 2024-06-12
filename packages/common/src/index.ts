@@ -1,6 +1,7 @@
 import * as Crypto from './crypto';
 
-export {PublicKey, EncryptedData} from './type'
+export * from './type/crypto'
+export * from './type/siwe'
 
 export {
     Crypto,
