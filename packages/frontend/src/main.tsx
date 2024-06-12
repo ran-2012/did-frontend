@@ -9,13 +9,13 @@ import 'react-toastify/dist/ReactToastify.css';
 import {ConfigProvider} from 'antd';
 import enUS from 'antd/locale/en_US';
 
-import Index from './route/Index.tsx'
-import Mine from './route/Mine.tsx'
-import Error from './route/Error.tsx'
+import Index from './page/Index.tsx'
+import Mine from './page/Mine.tsx'
+import Error from './page/Error.tsx'
 import PageTemplate from "./template/PageTemplate.tsx";
-import VcList from "./route/VcList.tsx";
-import VpList from "./route/VpList.tsx";
-import ModalTestGround from "./route/ModalTestGround.tsx";
+import VcList from "./page/VcList.tsx";
+import VpList from "./page/VpList.tsx";
+import ModalTestGround from "./page/ModalTestGround.tsx";
 
 function createRoute(route: string, Component: React.ComponentClass | React.FC): RouteObject {
     return {
