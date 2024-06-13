@@ -1,6 +1,7 @@
 import * as lz from 'lz-string';
 import {VerifiableCredential, VerifiablePresentation} from "@veramo/core";
 import {useEffect, useState} from "react";
+import {useAccount} from "wagmi";
 import QrCodeModal from "../modal/QrCodeModal.tsx";
 import CreateVpModal from "../modal/CreateVpModal.tsx";
 import JsonRawModal from "../modal/JsonRawModal.tsx";
@@ -231,6 +232,7 @@ function getVc() {
 }
 
 function ModalTestGround() {
+    const account = useAccount()
     const [qrString, setQrString] = useState('' as string)
     const [jsonStr, setJsonStr] = useState('' as string)
     const [showJson, setShowJson] = useState(false)
@@ -239,10 +241,6 @@ function ModalTestGround() {
     const veramo = useVeramo();
     const {login, api} = useMyApi();
 
-    console.log('Render');
-    useEffect(() => {
-        console.log("render in effect")
-    }, []);
     useEffect(() => {
         setTimeout(async () => {
             try {
@@ -252,7 +250,7 @@ function ModalTestGround() {
             }
         }, 1000)
 
-    }, [login]);
+    }, [account.isConnected]);
 
     function getCompressedString() {
         console.log(`before: ${data2.length}`)

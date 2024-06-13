@@ -1,23 +1,24 @@
-import {Component, createContext, ReactNode, useContext, useEffect, useState} from "react";
-import {useAccount, useChainId, useSignMessage} from "wagmi";
-import {signMessage} from '@wagmi/core'
+import {createContext, ReactNode, useContext, useEffect, useState} from "react";
+import {useAccount, useSignMessage} from "wagmi";
 import {SiweRequest} from "@did-demo/common";
-import {LocalStorage, Storage} from "../utility/storage.ts";
+import {LocalStorage} from "../utility/storage.ts";
 import {Api, createSiweMessage, DefaultApi} from "./api.ts";
 
 interface Param {
     children: ReactNode
 }
 
-const MyApiDefault = {
-    login: (): Promise<void> => {
-        return Promise.resolve()
-    },
+export interface MyApi {
+    login: (() => Promise<boolean>),
+    api: Api | null,
+    isLogin: boolean,
+}
+
+const MyApiDefault: MyApi = {
+    login: async () => false,
     api: DefaultApi,
     isLogin: false,
 }
-
-export type MyApi = typeof MyApiDefault
 
 export const MyApiContext = createContext<MyApi>(Object.assign(MyApiDefault, {
     isLogin: false,
@@ -39,6 +40,13 @@ function MyApiProvider(param: Param) {
     const [api, setApi] = useState<Api | null>(DefaultApi);
 
     async function login(): Promise<boolean> {
+        if (!account.isConnected) {
+            console.log('Not connected');
+            return false;
+        }
+
+        console.log(JSON.stringify(JSON.stringify(loadToken())));
+
         if (isLogin) {
             console.log('Already login');
             return true;
@@ -53,7 +61,7 @@ function MyApiProvider(param: Param) {
             const isValid = await api.verify(savedToken.message, savedToken.signature);
 
             if (isValid) {
-                console.log()
+                console.log(JSON.stringify(JSON.stringify(savedToken)));
                 setIsLogin(isValid);
                 return true;
             }
@@ -65,6 +73,7 @@ function MyApiProvider(param: Param) {
         console.log(`signature: ${signature}`);
         const isValid = await api.verify(message, signature);
         if (isValid) {
+            console.log(JSON.stringify({message, signature}));
             saveToken({message, signature});
         }
         setIsLogin(isValid);
