@@ -10,7 +10,7 @@ module.exports = {
     ignorePatterns: ['dist', '.eslintrc.cjs'],
     parser: '@typescript-eslint/parser',
     rules: {
-        'no-unused-vars': [
+        '@typescript-eslint/no-unused-vars': [
             'warn',
             {"args": "none"}
         ],

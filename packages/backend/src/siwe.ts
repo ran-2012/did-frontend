@@ -22,13 +22,14 @@ async function checkSiweRequest(siweRequest: SiweRequest) {
 }
 
 export const checkSiwe: Handler = async (req, res, next) => {
+
     if (!req.headers[SIWE_HEADER_NAME]) {
         res.status(400).json({error: `Missing ${SIWE_HEADER_NAME} header`});
         return;
     }
     const siweHeader = req.headers[SIWE_HEADER_NAME];
     const siweStr = typeof siweHeader === 'string' ? siweHeader : siweHeader[0];
-    const siweRequest = JSON.parse(siweStr);
+    const siweRequest = JSON.parse(siweStr) as SiweRequest;
 
     const {message, signature} = siweRequest;
     if (!message || !signature) {
@@ -43,6 +44,9 @@ export const checkSiwe: Handler = async (req, res, next) => {
         }
         return;
     }
+
+    const siweMessage = new SiweMessage(message);
+    req.user = siweMessage.address;
 
     next();
 };

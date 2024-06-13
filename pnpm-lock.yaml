@@ -48,6 +48,9 @@ importers:
       '@did-demo/common':
         specifier: workspace:^0.1.0
         version: link:../common
+      '@typegoose/typegoose':
+        specifier: ^12.5.0
+        version: 12.5.0(mongoose@8.4.1(socks@2.8.3))
       cors:
         specifier: ^2.8.5
         version: 2.8.5
@@ -73,7 +76,7 @@ importers:
         specifier: ^6.4.0
         version: 6.7.0(socks@2.8.3)
       mongoose:
-        specifier: ^8.2.2
+        specifier: ^8.4.1
         version: 8.4.1(socks@2.8.3)
       pure-rand:
         specifier: ^6.0.4
@@ -2567,6 +2570,12 @@ packages:
 
   '@tsconfig/node16@1.0.4':
     resolution: {integrity: sha512-vxhUy4J8lyeyinH7Azl1pdd43GJhZH/tP2weN8TntQblOY+A0XbT8DJk1/oCPuOOyg/Ja757rG0CgHcWC8OfMA==}
+
+  '@typegoose/typegoose@12.5.0':
+    resolution: {integrity: sha512-+2ucXC89PrlPUIw/204X5+fjRDHfAXqdH5V40H1W1GcFA2G6yTi6eU22EO3Uq0nRyQyO9keFCzjcoQXUMJOvBQ==}
+    engines: {node: '>=16.20.1'}
+    peerDependencies:
+      mongoose: ~8.4.0
 
   '@types/argparse@1.0.38':
     resolution: {integrity: sha512-ebDJ9b0e702Yr7pWgB0jzm+CX4Srzz8RcXtLJDJB+BSccqMa36uyH/zUsSYao5+BD1ytv3k3rPYCq4mAE1hsXA==}
@@ -5891,6 +5900,10 @@ packages:
   logkitty@0.7.1:
     resolution: {integrity: sha512-/3ER20CTTbahrCrpYfPn7Xavv9diBROZpoXGVZDWMw4b/X4uuUwAC0ki85tgsdMRONURyIJbcOvS94QsUBYPbQ==}
     hasBin: true
+
+  loglevel@1.9.1:
+    resolution: {integrity: sha512-hP3I3kCrDIMuRwAwHltphhDM1r8i55H33GgqjXbrisuJhF4kRhW1dNuxsRklp4bXl8DSdLaNLuiL4A/LWRfxvg==}
+    engines: {node: '>= 0.6.0'}
 
   logplease@1.2.15:
     resolution: {integrity: sha512-jLlHnlsPSJjpwUfcNyUxXCl33AYg2cHhIf9QhGL2T4iPT0XPB+xP1LRKFPgIg1M/sg9kAJvy94w9CzBNrfnstA==}
@@ -12593,6 +12606,15 @@ snapshots:
 
   '@tsconfig/node16@1.0.4': {}
 
+  '@typegoose/typegoose@12.5.0(mongoose@8.4.1(socks@2.8.3))':
+    dependencies:
+      lodash: 4.17.21
+      loglevel: 1.9.1
+      mongoose: 8.4.1(socks@2.8.3)
+      reflect-metadata: 0.2.2
+      semver: 7.6.2
+      tslib: 2.6.3
+
   '@types/argparse@1.0.38': {}
 
   '@types/babel__core@7.20.5':
@@ -17274,6 +17296,8 @@ snapshots:
       ansi-fragments: 0.2.1
       dayjs: 1.11.11
       yargs: 15.4.1
+
+  loglevel@1.9.1: {}
 
   logplease@1.2.15: {}
 
