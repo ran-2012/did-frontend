@@ -2,6 +2,7 @@ import {Handler, Router} from 'express';
 import {VcRequest, VcRequestStatus} from '@did-demo/common';
 import {checkSiwe} from './siwe';
 import {VcDb} from './db/vc';
+import {getLogger} from './log';
 
 const vcRouter: Router = Router();
 
@@ -18,25 +19,36 @@ const getVcData: Handler = async (req, res, next) => {
 
 };
 
+const log = getLogger('VcDb');
 const vcDb = new VcDb();
 
 vcRouter.post('/vc', async (req, res) => {
     const {holder, issuer, issuerPublicKey, publicKey, signedVc, vc} = req.body as VcRequest;
-    if (!holder || !issuer || !issuerPublicKey || !publicKey || !signedVc || !vc) {
+    if (!holder || !issuer) {
         res.status(400).send({error: 'Missing required fields'});
         return;
     }
 
     await vcDb.create({holder, issuer, issuerPublicKey, publicKey, signedVc, vc, status: VcRequestStatus.PENDING});
+    //log
+    log.i('Data created');
     res.status(200).send();
 });
 
-vcRouter.get('/vc/sent', async (req, res) => {
+vcRouter.get('/vc/holder/:holder', async (req, res) => {
+    if (req.user != req.params.holder) {
+        res.status(403).send({error: 'Unauthorized, invalid holder'});
+        return;
+    }
     const data = await vcDb.getByHolder(req.user!);
     res.status(200).send({data});
 });
 
-vcRouter.get('/vc/received', async (req, res) => {
+vcRouter.get('/vc/issuer/:issuer', async (req, res) => {
+    if (req.user != req.params.issuer) {
+        res.status(403).send({error: 'Unauthorized, invalid issuer'});
+        return;
+    }
     const data = await vcDb.getByIssuer(req.user!);
     res.status(200).send({data});
 });
@@ -52,7 +64,8 @@ vcRouter.delete('/vc/:id', getVcData, async (req, res) => {
 });
 
 vcRouter.put('/vc/:id/', getVcData, async (req, res) => {
-    const {issuer, signedVc} = req.body as Partial<VcRequest>;
+    const issuer = req.vcData!.issuer;
+    const {signedVc} = req.body as Partial<VcRequest>;
     if (!issuer) {
         res.status(400).send({error: 'Missing issuer'});
         return;

@@ -5,7 +5,7 @@ import {getLogger} from './log';
 
 const siweRouter = Router();
 
-export const SIWE_HEADER_NAME = 'X-SIWE';
+export const SIWE_HEADER_NAME = 'X-SIWE'.toLowerCase();
 
 const log = getLogger('siwe');
 
@@ -22,12 +22,13 @@ async function checkSiweRequest(siweRequest: SiweRequest) {
 }
 
 export const checkSiwe: Handler = async (req, res, next) => {
+    const siweHeader = req.headers[SIWE_HEADER_NAME];
 
-    if (!req.headers[SIWE_HEADER_NAME]) {
+    if (!siweHeader) {
         res.status(400).json({error: `Missing ${SIWE_HEADER_NAME} header`});
         return;
     }
-    const siweHeader = req.headers[SIWE_HEADER_NAME];
+
     const siweStr = typeof siweHeader === 'string' ? siweHeader : siweHeader[0];
     const siweRequest = JSON.parse(siweStr) as SiweRequest;
 

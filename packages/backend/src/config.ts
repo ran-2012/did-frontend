@@ -11,4 +11,8 @@ export default {
         },
         tagLevel: {}
     },
+
+    mongodb: {
+        connectStr: 'mongodb://localhost:27017/dev'
+    }
 };

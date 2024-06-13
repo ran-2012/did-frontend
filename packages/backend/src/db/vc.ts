@@ -5,7 +5,6 @@ import mongoose from 'mongoose';
 @index({holder: 1, issuer: 1})
 export class VcRequestData implements GetVcResponse {
 
-    @prop()
     _id!: mongoose.Types.ObjectId;
 
     get id() {
@@ -27,7 +26,7 @@ export class VcRequestData implements GetVcResponse {
     @prop()
     status = VcRequestStatus.PENDING;
 
-    constructor(holder: string, issuer: string, issuerPublicKey: string, publicKey: string, signedVc: string, vc: string, status: VcRequestStatus) {
+    constructor(holder: string, issuer: string, issuerPublicKey = '', publicKey = '', signedVc = '', vc = '', status: VcRequestStatus = VcRequestStatus.PENDING) {
         this.holder = holder;
         this.issuer = issuer;
         this.issuerPublicKey = issuerPublicKey;
@@ -38,9 +37,16 @@ export class VcRequestData implements GetVcResponse {
     }
 }
 
-const VcModel = getModelForClass(VcRequestData);
+export const VcModel = getModelForClass(VcRequestData);
 
 export class VcDb {
+
+    /**
+     * @TestOnly
+     */
+    async drop() {
+        await VcModel.collection.drop();
+    }
 
     async getByHolder(holder: string) {
         return VcModel.find({holder}).exec();

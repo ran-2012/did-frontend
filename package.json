@@ -15,7 +15,8 @@
     "dependencies": {
         "localforage": "^1.10.0",
         "lz-string": "^1.5.0",
-        "siwe": "^2.3.2"
+        "siwe": "^2.3.2",
+        "ts-node": "^10.9.2"
     },
     "devDependencies": {
         "@typescript-eslint/eslint-plugin": "^7.2.0",
