@@ -16,6 +16,10 @@ export class Storage {
     load(key: string, param: StorageLoadParam | null = null): unknown | null {
         throw new Error('Not implemented')
     }
+
+    remove(key: string): void {
+        throw new Error('Not implemented')
+    }
 }
 
 function defaultSerializeFunc(value: unknown) {
@@ -40,6 +44,10 @@ export class _LocalStorage extends Storage {
         }
         return deserializeFunc(res)
     }
+
+    remove(key: string) {
+        localStorage.removeItem(key)
+    }
 }
 
 export class MemoryStorage extends Storage {
@@ -57,6 +65,10 @@ export class MemoryStorage extends Storage {
             return null
         }
         return deserializeFunc(res)
+    }
+
+    remove(key: string) {
+        this.map.delete(key)
     }
 }
 

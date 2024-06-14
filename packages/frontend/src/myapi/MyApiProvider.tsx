@@ -10,12 +10,18 @@ interface Param {
 
 export interface MyApi {
     login: (() => Promise<boolean>),
+    logout: (() => Promise<boolean>),
     api: Api | null,
     isLogin: boolean,
 }
 
 const MyApiDefault: MyApi = {
-    login: async () => false,
+    login: async () => {
+        throw new Error('Not implemented')
+    },
+    logout: async () => {
+        throw new Error('Not implemented')
+    },
     api: DefaultApi,
     isLogin: false,
 }
@@ -32,6 +38,10 @@ function loadToken(): SiweRequest | null {
     return LocalStorage.load('siweRequest') as SiweRequest;
 }
 
+function removeToken() {
+    LocalStorage.remove('siweRequest');
+}
+
 function MyApiProvider(param: Param) {
     const account = useAccount({});
     const signMessage = useSignMessage();
@@ -43,8 +53,6 @@ function MyApiProvider(param: Param) {
             console.log('Not connected');
             return false;
         }
-
-        console.log(JSON.stringify(JSON.stringify(loadToken())));
 
         if (isLogin) {
             console.log('Already login');
@@ -60,7 +68,6 @@ function MyApiProvider(param: Param) {
             const isValid = await api.verify(savedToken.message, savedToken.signature);
 
             if (isValid) {
-                console.log(JSON.stringify(JSON.stringify(savedToken)));
                 setIsLogin(isValid);
                 return true;
             }
@@ -78,13 +85,23 @@ function MyApiProvider(param: Param) {
         return isValid;
     }
 
+    async function logout(): Promise<boolean> {
+        removeToken();
+        setIsLogin(false);
+        return true;
+    }
+
+    useEffect(() => {
+        console.log('is login: ' + isLogin);
+    }, [isLogin]);
+
     return (
-        <MyApiContext.Provider value={
-            Object.assign(MyApiDefault, {
-                isLogin,
-                api,
-                login,
-            })}>
+        <MyApiContext.Provider value={{
+            isLogin,
+            api,
+            login,
+            logout,
+        }}>
             {param.children}
         </MyApiContext.Provider>
     );
