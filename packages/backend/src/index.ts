@@ -1,5 +1,5 @@
 import 'dotenv/config';
-import express, {ErrorRequestHandler, Router} from 'express';
+import express, {ErrorRequestHandler} from 'express';
 import {PublicKey} from '@did-demo/common';
 import cors from 'cors';
 import mongoose from 'mongoose';
@@ -7,6 +7,7 @@ import {siweRouter} from './siwe';
 import {getLogger} from './log';
 import config from './config';
 import {vcRouter} from './vc';
+import {pkRouter} from './pk';
 
 const log = getLogger('Server');
 log.i('NODE_ENV', process.env.NODE_ENV);
@@ -30,6 +31,7 @@ app.use((req, res, next) => {
 
 app.use(siweRouter);
 app.use(vcRouter);
+app.use(pkRouter);
 
 app.get('/', (req, res) => {
     res.send('Hello World!');
