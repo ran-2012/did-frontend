@@ -32,12 +32,11 @@ function loadToken(): SiweRequest | null {
     return LocalStorage.load('siweRequest') as SiweRequest;
 }
 
-
 function MyApiProvider(param: Param) {
     const account = useAccount({});
     const signMessage = useSignMessage();
     const [isLogin, setIsLogin] = useState<boolean>(false);
-    const [api, setApi] = useState<Api | null>(DefaultApi);
+    const [api, setApi] = useState<Api>(DefaultApi);
 
     async function login(): Promise<boolean> {
         if (!account.isConnected) {
@@ -70,22 +69,14 @@ function MyApiProvider(param: Param) {
         console.log(`nonce: ${nonce}`);
         const message = createSiweMessage(account.address, account.chainId, nonce);
         const signature = await signMessage.signMessageAsync({message});
-        console.log(`signature: ${signature}`);
         const isValid = await api.verify(message, signature);
         if (isValid) {
-            console.log(JSON.stringify({message, signature}));
+            console.log("Save token")
             saveToken({message, signature});
         }
         setIsLogin(isValid);
         return isValid;
     }
-
-    useEffect(() => {
-        // const token = loadToken()
-        // if (checkToken(token)) {
-        //     setIsLogin(true);
-        // }
-    }, []);
 
     return (
         <MyApiContext.Provider value={

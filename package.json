@@ -8,7 +8,7 @@
     "link-workspace-packages": true,
     "scripts": {
         "build-dep": "npm run build -w packages/common",
-        "dev": "pnpm --filter ./packages/common run build && concurrently -r \"pnpm --filter ./packages/frontend run dev\" \"pnpm --filter ./packages/backend run dev\"",
+        "dev": "pnpm --filter ./packages/common run build && concurrently \"pnpm --filter ./packages/frontend run dev\" \"pnpm --filter ./packages/backend run dev\"",
         "dev-backend": "npm run dev -w packages/backend",
         "lint": "eslint . --ext .ts,.tsx --fix"
     },
