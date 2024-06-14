@@ -1,18 +1,16 @@
 import React from "react";
-import {Button, Card, Descriptions, Divider, Flex, List, Modal} from "antd";
+import {Button, Card, Descriptions, List, Modal} from "antd";
 import {isSuccess} from "@blockchain-lab-um/masca-connector";
 import {VerifiablePresentation} from "@veramo/core";
 import {useMasca, useMascaCallWrapper, VC} from "../masca/utility.ts";
 import {VcUtility} from "../veramo/utility.ts";
 import {VcUiUtility} from "../veramo/uiUtility.tsx";
+import {ModalBaseParam} from "./type.ts";
 
-interface Param {
-    show: boolean,
+interface Param extends ModalBaseParam {
     vcList: VC[]
-    onClose: () => void;
     onCreatedVp: (vp: VerifiablePresentation) => void;
 }
-
 
 function CreateVpModal(param: Param) {
     const {api} = useMasca()

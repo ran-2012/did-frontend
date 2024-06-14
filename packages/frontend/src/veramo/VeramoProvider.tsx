@@ -30,7 +30,7 @@ function VeramoProvider(param: Param) {
             console.log("VerificationService initialized")
             setInitialized(true);
         })
-    });
+    }, []);
 
     return (
         <VeramoContext.Provider value={{initialized: initialized, verify: VerificationService.verify}}>

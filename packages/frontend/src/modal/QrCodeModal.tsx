@@ -1,12 +1,13 @@
 import {Button, Modal, QRCode} from "antd";
+import {ModalBaseParam} from "./type.ts";
 
-interface Param {
-    show: boolean;
-    onClose: () => void;
-    qrString: string;
+namespace QrCodeModal {
+    export interface Param extends ModalBaseParam {
+        qrString: string;
+    }
 }
 
-function QrCodeModal(param: Param) {
+function QrCodeModal(param: QrCodeModal.Param) {
     return (
         <Modal
             closeIcon={null}

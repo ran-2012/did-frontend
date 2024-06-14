@@ -13,6 +13,7 @@ import {compressToBase64} from "../utility/compress.ts";
 
 import '../component/styles.css'
 import CreateVpModal from "../modal/CreateVpModal.tsx";
+import {useMyModal} from "../modal/ModalProvider.tsx";
 
 interface Param {
 
@@ -32,11 +33,12 @@ function VcList(param: Param) {
     const mosca = useMasca();
     const mascaWrapper = useMascaCallWrapper();
 
-    const [currentVc, setCurrentVc] = useState<VC>(getTestVc)
     const [isLoading, setIsLoading] = useState(false)
 
+    const displayVc = useRef<VC>(getTestVc());
+    const showVcModalFunc = useMyModal(VcDetailModal);
+
     const [vcList, setVcList] = useState<VC[]>([])
-    const [isShowVcModal, setIsShowVcModal] = useState(false);
 
     const [jsonStr, setJsonStr] = useState('' as string)
     const [isShowJsonModal, _setIsShowJsonModal] = useState(false);
@@ -81,19 +83,21 @@ function VcList(param: Param) {
             successMsg: 'Credential deleted',
             errorMsg: 'Failed to delete Credential',
             isLoading: setIsLoading,
-        }, currentVc.metadata.id))
+        }, displayVc.current.metadata.id))
     }
 
     function updateCurrentVc(vc: VC | null = null) {
         if (vc != null) {
-            setCurrentVc(vc)
+            displayVc.current = vc;
         } else {
-            setCurrentVc(getTestVc())
+            displayVc.current = getTestVc();
         }
     }
 
-    function closeVcDetailModal() {
-        setIsShowVcModal(false);
+    function showVcModal() {
+        console.log('showVcModalFunc: ' + showVcModalFunc)
+        if (!showVcModalFunc) return;
+        showVcModalFunc.show({vc: displayVc.current.data, title: 'Verifiable Credential Detail'})
     }
 
     function getDescription(vc: VC) {
@@ -131,7 +135,7 @@ function VcList(param: Param) {
                 </div>
                 <div className={'align-self-end'}>
                     <Button size={'large'} className={'me-2'} onClick={() => {
-                        setIsShowVcModal(true)
+                        showVcModal()
                     }}>
                         Demo Credential
                     </Button>
@@ -161,7 +165,7 @@ function VcList(param: Param) {
                                   </a>,
                                   <a className={'text-decoration-none'} onClick={() => {
                                       updateCurrentVc(item)
-                                      setIsShowVcModal(true)
+                                      showVcModal()
                                   }}>Detail</a>,
                                   <a className={'text-decoration-none'} onClick={() => {
                                       updateCurrentVc(item)
@@ -178,8 +182,6 @@ function VcList(param: Param) {
                           </Flex>
                       )}></List>
             </Checkbox.Group>
-            <VcDetailModal vc={currentVc.data} title={'Verifiable Credential Detail'} show={isShowVcModal}
-                           onClose={closeVcDetailModal}/>
             <JsonRawModal show={isShowJsonModal} json={jsonStr}
                           onClose={() => _setIsShowJsonModal(false)}/>
             <OkCancelModal show={isShowDeleteConfirmModal} message={'Deletion is irreversible. Are you sure?'}
@@ -193,7 +195,7 @@ function VcList(param: Param) {
                            }}
                            onCancel={() => setIsShowDeleteConfirmModal(false)}/>
             <QrCodeModal show={isShowQrCodeModal} onClose={() => setIsShowQrCodeModal(false)}
-                         qrString={compressToBase64(currentVc.data)}/>
+                         qrString={compressToBase64(displayVc.current.data)}/>
             <CreateVpModal show={isShowCreateVpModal} vcList={selectedVcList}
                            onClose={() => {
                                setIsShowCreateVpModal(false)
