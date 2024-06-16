@@ -15,5 +15,6 @@ module.exports = {
             {"args": "none"}
         ],
         'import/order': 'warn',
+        '@typescript-eslint/ban-ts-comment': 'off',
     },
 }

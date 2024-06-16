@@ -1,13 +1,11 @@
 import {Button, Modal, QRCode} from "antd";
 import {ModalBaseParam} from "./type.ts";
 
-namespace QrCodeModal {
-    export interface Param extends ModalBaseParam {
-        qrString: string;
-    }
+export interface Param extends ModalBaseParam {
+    qrString: string;
 }
 
-function QrCodeModal(param: QrCodeModal.Param) {
+function QrCodeModal(param: Param) {
     return (
         <Modal
             closeIcon={null}
@@ -16,7 +14,7 @@ function QrCodeModal(param: QrCodeModal.Param) {
             open={param.show}
             footer={(<Button onClick={param.onClose}>Close</Button>)}>
             <div className={'d-flex justify-content-center'}>
-                <QRCode errorLevel={'L'} size={600}
+                <QRCode errorLevel={'L'}
                         style={{border: 'none'}}
                         value={param.qrString} type={'svg'}/>
             </div>

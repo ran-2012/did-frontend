@@ -22,5 +22,6 @@ module.exports = {
         ],
         'import/order': 'warn',
         'import/no-unresolved': 'off',
+        '@typescript-eslint/ban-ts-comment': 'off',
     },
 }
