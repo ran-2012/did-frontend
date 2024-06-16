@@ -16,11 +16,15 @@ pkRouter.get('/pk/user/:user', async (req, res) => {
         return;
     }
     const result = await pkDb.get(req.params.user);
+    if(!result){
+        res.status(404).send({error: 'Not found'});
+    }
     res.status(200).send({data: 'pk'});
 });
 
-pkRouter.post('/pk', async (req, res) => {
-    const {user, pk} = req.body;
+pkRouter.post('/pk/user/:user', async (req, res) => {
+    const user = req.params.user;
+    const {pk} = req.body;
     if (!user || !pk) {
         res.status(400).send({error: 'Missing required fields'});
         return;

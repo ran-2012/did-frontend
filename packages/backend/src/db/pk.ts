@@ -31,8 +31,13 @@ export class PkDb {
         await pkData.save();
     }
 
-    async get(user: string) {
-        return PkModel.findOne({user}).exec();
+    async get(user: string): Promise<string | null> {
+        const res = await PkModel.findOne({user}).exec();
+        if (res) {
+            return res.pk;
+        } else {
+            return null;
+        }
     }
 
     async update(user: string, pk: string) {
