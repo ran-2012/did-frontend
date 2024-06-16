@@ -11,12 +11,12 @@ export interface ModalFuncMap<Param extends ModalBaseParam, Component extends Re
     show: (param: Omit<React.ComponentProps<Component>, keyof ModalBaseParam>) => void;
 }
 
-export type MyModal = Map<React.FC<any>, ModalFuncMap<any, any>>
+export type MyModal = Map<React.FC<unknown>, ModalFuncMap<ModalBaseParam, React.FC<ModalBaseParam>>>
 
 export const ModalContext = createContext<MyModal>(new Map())
 
 function ModalProvider(param: Param) {
-    const modalSet = useRef(new Set<React.FC<any>>());
+    const modalSet = useRef(new Set<React.FC<unknown>>());
     const [displayState, setDisplayState] = useState(new Map<string, boolean>());
     const [displayParam, setDisplayParam] = useState(new Map<string, ModalBaseParam>());
     const [modalFuncMap, setModalFuncMap] = useState<MyModal>(new Map());
@@ -25,18 +25,32 @@ function ModalProvider(param: Param) {
         console.log("init modal provider")
         const _displayState = displayState;
         const _displayParam = displayParam;
+        const _modalFuncMap: MyModal = new Map();
 
         function addModal<Param extends ModalBaseParam>(Component: React.FC<Param>, param: Omit<React.ComponentProps<React.FC<Param>>, keyof ModalBaseParam>) {
             const name = Component.name;
-            modalSet.current.add(Component);
+            modalSet.current.add(Component as React.FC<unknown>);
 
             _displayState.set(name, false);
             _displayParam.set(name, {
                 show: false,
                 onClose: () => {
                     _displayState.set(name, false);
-                    setDisplayState(_displayState);
+                    setDisplayState(new Map(_displayState));
                 }, ...param
+            });
+            _modalFuncMap.set(Component as React.FC<unknown>, {
+                // @ts-ignore
+                show: (param: Omit<Param, keyof ModalBaseParam>) => {
+                    console.log("show, param:" + JSON.stringify(param));
+                    const previousValue = _displayParam.get(name)!;
+
+                    _displayState.set(name, true);
+                    _displayParam.set(name, Object.assign(previousValue, param));
+
+                    setDisplayState(new Map(_displayState));
+                    setDisplayParam(new Map(_displayParam));
+                }
             });
         }
 
@@ -50,17 +64,7 @@ function ModalProvider(param: Param) {
 
         setDisplayState(_displayState);
         setDisplayParam(_displayParam);
-
-        const ret: MyModal = new Map;
-        for (const modal of modalSet.current) {
-            ret.set(modal, {
-                // @ts-ignore
-                show: (param: ModalBaseParam) => {
-                    setDisplayState(new Map(displayState.set(modal.name, true)));
-                }
-            });
-        }
-        setModalFuncMap(ret)
+        setModalFuncMap(_modalFuncMap)
     }, []);
 
 
@@ -68,10 +72,8 @@ function ModalProvider(param: Param) {
         const list: React.FC<ModalBaseParam>[] = Array.from(modalSet.current);
 
         return list.map((Component, index) => {
-
             const name = Component.name;
-            const param = Object.assign(displayParam.get(name)!, {show: displayState.get(name)!})
-            return <Component key={`key-${name}`} {...param}/>
+            return <Component key={`key-${name}`} {...displayParam.get(name)!} show={displayState.get(name)!}/>
         })
     }
 
@@ -84,7 +86,7 @@ function ModalProvider(param: Param) {
 }
 
 export function useMyModal<Param extends ModalBaseParam>(c: React.FC<Param>): ModalFuncMap<Param, React.FC<Param>> | null {
-    return useContext(ModalContext).get(c) ?? null;
+    return useContext(ModalContext).get(c as React.FC<unknown>) ?? null;
 }
 
 export default ModalProvider;
