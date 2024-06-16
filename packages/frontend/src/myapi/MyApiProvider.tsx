@@ -1,8 +1,9 @@
-import {createContext, ReactNode, useContext, useEffect, useState} from "react";
+import {createContext, ReactNode, useContext, useEffect, useRef, useState} from "react";
 import {useAccount, useSignMessage} from "wagmi";
 import {SiweRequest} from "@did-demo/common";
+import {Simulate} from "react-dom/test-utils";
 import {LocalStorage} from "../utility/storage.ts";
-import {Api, createSiweMessage, DefaultApi} from "./api.ts";
+import {Api, createSiweMessage} from "./api.ts";
 
 interface Param {
     children: ReactNode
@@ -11,8 +12,9 @@ interface Param {
 export interface MyApi {
     login: (() => Promise<boolean>),
     logout: (() => Promise<boolean>),
-    api: Api | null,
+    api: Api,
     isLogin: boolean,
+    user: string,
 }
 
 const MyApiDefault: MyApi = {
@@ -22,12 +24,13 @@ const MyApiDefault: MyApi = {
     logout: async () => {
         throw new Error('Not implemented')
     },
-    api: DefaultApi,
+    api: new Api(loadToken() ? JSON.stringify(loadToken()) : ''),
     isLogin: false,
+    user: '',
 }
 
 export const MyApiContext = createContext<MyApi>(Object.assign(MyApiDefault, {
-    isLogin: false,
+    isLogin: hasToken(),
 }))
 
 function saveToken(siweRequest: SiweRequest) {
@@ -42,11 +45,15 @@ function removeToken() {
     LocalStorage.remove('siweRequest');
 }
 
+function hasToken() {
+    return loadToken() != null;
+}
+
 function MyApiProvider(param: Param) {
-    const account = useAccount({});
+    const account = useAccount();
     const signMessage = useSignMessage();
-    const [isLogin, setIsLogin] = useState<boolean>(false);
-    const [api, setApi] = useState<Api>(DefaultApi);
+    const [isLogin, setIsLogin] = useState<boolean>(hasToken());
+    const api = useRef(MyApiDefault.api);
 
     async function login(): Promise<boolean> {
         if (!account.isConnected) {
@@ -58,27 +65,27 @@ function MyApiProvider(param: Param) {
             console.log('Already login');
             return true;
         }
-        if (!api) throw new Error("Api not found");
         if (!account.address) throw new Error("Account not found");
         if (!account.chainId) throw new Error("ChainId not found");
 
         const savedToken = loadToken();
         if (savedToken) {
             console.log('Found saved token')
-            const isValid = await api.verify(savedToken.message, savedToken.signature);
+            const isValid = await api.current.verify(savedToken.message, savedToken.signature);
 
             if (isValid) {
                 setIsLogin(isValid);
                 return true;
             }
         }
-        const nonce = await api.getNonce();
+        const nonce = await api.current.getNonce();
         console.log(`nonce: ${nonce}`);
         const message = createSiweMessage(account.address, account.chainId, nonce);
         const signature = await signMessage.signMessageAsync({message});
-        const isValid = await api.verify(message, signature);
+        const isValid = await api.current.verify(message, signature);
         if (isValid) {
             console.log("Save token")
+            api.current.setToken(JSON.stringify({message, signature}));
             saveToken({message, signature});
         }
         setIsLogin(isValid);
@@ -98,7 +105,8 @@ function MyApiProvider(param: Param) {
     return (
         <MyApiContext.Provider value={{
             isLogin,
-            api,
+            api: api.current,
+            user: account.address ?? '',
             login,
             logout,
         }}>

@@ -28,10 +28,10 @@ function MascaProvider(param: Param) {
                 return;
             }
             try {
-                if (!isConnecting.current && isConnected && account.address) {
+                if (!isConnecting.current && isConnected && address) {
                     console.log("Reconnect to masca")
                     isConnecting.current = true;
-                    const api = (await connectMasca(account.address))
+                    const api = (await connectMasca(address))
                     setMascaApi(api)
                     try {
                         await api.addTrustedDapp(window.origin)
