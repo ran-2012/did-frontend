@@ -43,6 +43,7 @@ export function CryptoProvider(param: Param) {
             createKeyPair: async (seed: string | null = null, save: boolean = true) => {
                 await _Crypto.createKeyPair(seed, save!);
                 setHasKey(true);
+                setPkHash(_Crypto.getPkHash());
             },
             saveKeyPair: (seed: string, pk: pki.rsa.PublicKey | string, sk: pki.rsa.PrivateKey | string) => {
                 _Crypto.savePublicKey(seed, pk);
