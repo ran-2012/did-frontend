@@ -1,5 +1,6 @@
-import {getModelForClass, index, prop} from '@typegoose/typegoose';
+import {getModelForClass, index, modelOptions, prop, Severity} from '@typegoose/typegoose';
 
+@modelOptions({schemaOptions: {collection: 'pk'}, options: {allowMixed: Severity.ALLOW}})
 @index({user: 1})
 export class PkData {
 
@@ -41,6 +42,6 @@ export class PkDb {
     }
 
     async update(user: string, pk: string) {
-        await PkModel.findOneAndUpdate({user}, {pk});
+        await PkModel.findOneAndUpdate({user: user}, {pk});
     }
 }

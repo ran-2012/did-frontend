@@ -1,7 +1,8 @@
 import {GetVcResponse, VcRequest, VcRequestStatus, WithStatus} from '@did-demo/common';
-import {getModelForClass, index, prop} from '@typegoose/typegoose';
+import {getModelForClass, index, modelOptions, prop, Severity} from '@typegoose/typegoose';
 import mongoose from 'mongoose';
 
+@modelOptions({schemaOptions: {collection: 'vc'}, options: {allowMixed: Severity.ALLOW}})
 @index({holder: 1, issuer: 1})
 export class VcRequestData implements GetVcResponse {
 

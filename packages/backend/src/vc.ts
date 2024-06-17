@@ -29,18 +29,19 @@ vcRouter.post('/vc', async (req, res) => {
         return;
     }
 
-    await vcDb.create({holder, issuer, issuerPublicKey, publicKey, signedVc, vc, status: VcRequestStatus.PENDING});
+    await vcDb.create({holder: holder.toLowerCase(), issuer: issuer.toLowerCase(), issuerPublicKey, publicKey, signedVc, vc, status: VcRequestStatus.PENDING});
     //log
     log.i('Data created');
     res.status(200).send();
 });
 
 vcRouter.get('/vc/holder/:holder', async (req, res) => {
-    if (req.user != req.params.holder) {
+    if (req.user?.toLowerCase() != req.params.holder.toLowerCase()) {
         res.status(403).send({error: 'Unauthorized, invalid holder'});
         return;
     }
-    const data = await vcDb.getByHolder(req.user!);
+    const user = req.params.holder.toLowerCase();
+    const data = await vcDb.getByHolder(user);
     res.status(200).send({data});
 });
 
@@ -49,7 +50,8 @@ vcRouter.get('/vc/issuer/:issuer', async (req, res) => {
         res.status(403).send({error: 'Unauthorized, invalid issuer'});
         return;
     }
-    const data = await vcDb.getByIssuer(req.user!);
+    const user = req.params.issuer.toLowerCase();
+    const data = await vcDb.getByIssuer(user);
     res.status(200).send({data});
 });
 

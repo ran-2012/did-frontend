@@ -15,23 +15,31 @@ log.i('Hostname: ', process.env.HOSTNAME);
 
 const app = express();
 
-
 const errorHandler: ErrorRequestHandler = (err, _, res, __) => {
+    const error = err as Error;
+    log.e(error.stack);
     log.e(err);
     res.status(500).send({error: 'Something broke!', detail: err});
 };
-app.use(express.json());
-app.use(express.urlencoded({extended: true}));
-app.use(cors({credentials: true, origin: '*'}));
 
 app.use((req, res, next) => {
     log.d(`Request: ${req.method} ${req.url}`);
     next();
 });
 
-app.use(siweRouter);
-app.use(vcRouter);
-app.use(pkRouter);
+app.use(express.urlencoded({extended: true}));
+app.use(express.json());
+app.use(cors({
+    credentials: true,
+    origin: '*',
+    // origin: ['http://localhost:3080'],
+    // allowedHeaders: ['Content-Type']
+}));
+
+
+app.use('/', siweRouter);
+app.use('/', vcRouter);
+app.use('/', pkRouter);
 
 app.get('/', (req, res) => {
     res.send('Hello World!');
