@@ -11,8 +11,8 @@ import {useMasca} from "../masca/utility.ts";
 
 function exampleItemList() {
     const result: ItemParam[] = []
-    result.push(new ItemParam('id', 'did:ethr:0xaa36a7:0x0fdf03d766559816e67b29df9de663ae1a6e6101', false))
-    result.push(new ItemParam('type', 'Regular User'))
+    result.push(new ItemParam(0, 'id', 'did:ethr:0xaa36a7:0x0fdf03d766559816e67b29df9de663ae1a6e6101', false))
+    result.push(new ItemParam(1, 'type', 'Regular User'))
     return result
 }
 
@@ -28,7 +28,7 @@ function Index() {
     useEffect(() => {
         console.log("account: " + account.address)
         if (itemList.length == 0) {
-            setItemList([new ItemParam('id', getDid(account.address as string, 'ethr'), false)]);
+            setItemList([new ItemParam(0, 'id', getDid(account.address as string, 'ethr'), false)]);
         } else {
             itemList[0].key = 'id';
             itemList[0].value = getDid(account.address as string, 'ethr');
@@ -67,7 +67,7 @@ function Index() {
     }
 
     return (
-        <Flex className='flex-column w-100 align-content-center'>
+        <Flex className='flex-column w-100 align-content-center m-2'>
             <div className={'m-auto'}>
                 <Button type={'primary'} size={'large'} className={'mt-3'} onClick={testSign} disabled={!isConnected}>
                     Sign test

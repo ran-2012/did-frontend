@@ -6,13 +6,15 @@ enum ItemType {
 }
 
 class ItemParam {
+    id: number;
     key: string;
     value: string;
     enabled: boolean;
     selected: boolean;
     type: ItemType | null;
 
-    constructor(key: string, value: string, enable: boolean = true, selected: boolean = true, type: ItemType | null = null) {
+    constructor(id: number, key: string, value: string, enable: boolean = true, selected: boolean = true, type: ItemType | null = null) {
+        this.id = id;
         this.key = key;
         this.value = value;
         this.enabled = enable;
@@ -30,13 +32,13 @@ function KeyValueList(param: Param) {
 
     useEffect(() => {
         if (param.list.length == 0) {
-            param.onListUpdate([new ItemParam('', '')])
+            param.onListUpdate([new ItemParam(0, '', '')])
         }
     }, [param])
 
     function addItem() {
         if (param.onListUpdate) {
-            param.onListUpdate([...param.list, new ItemParam('', '')])
+            param.onListUpdate([...param.list, new ItemParam(param.list.length, '', '')])
         }
     }
 
@@ -90,14 +92,14 @@ function KeyValueList(param: Param) {
     }
 
     return (
-        <Card className='m-3' title={'Data fields'} extra={
+        <Card title={'Data fields'} extra={
             <div className='d-flex justify-content-end'>
                 <Button className='me-2 font-monospace' type={'primary'} onClick={addItem} icon={'+'}/>
                 <Button className='font-monospace' type={'primary'} onClick={removeItem}
                         disabled={!enableRemoveItemButton()} icon={'-'}/>
             </div>}>
             <Table columns={getColumn()} dataSource={param.list} pagination={false}
-                   rowKey={(itemParam, index) => index ? index : itemParam.key}/>
+                   rowKey={(itemParam) => itemParam.id}/>
         </Card>
     );
 }
