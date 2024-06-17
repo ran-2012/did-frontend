@@ -1,5 +1,6 @@
 import {pki} from 'node-forge';
 import {Crypto} from '@did-demo/common'
+import * as lz from 'lz-string';
 import {LocalStorage} from "../utility/storage.ts";
 
 /**
@@ -102,24 +103,30 @@ function loadPrivateKey(seed: string | null = null): pki.rsa.PrivateKey | null {
     }
 }
 
-export function encrypt(message: string, publicKey: pki.rsa.PublicKey | null = null) {
+export function encrypt(message: string, publicKey: pki.rsa.PublicKey | string | null = null) {
     if (publicKey == null) {
         publicKey = loadPublicKey();
     }
     if (publicKey == null) {
         throw new Error('No public key found')
     }
-    return Crypto.encryptMessage(message, publicKey);
+    if (typeof publicKey === 'string') {
+        publicKey = Crypto.importPublicKey(publicKey);
+    }
+    return lz.compressToBase64(Crypto.encryptMessage(message, publicKey));
 }
 
-export function decrypt(encrypted: string, privateKey: pki.rsa.PrivateKey | null = null) {
+export function decrypt(encrypted: string, privateKey: pki.rsa.PrivateKey | string | null = null) {
     if (privateKey == null) {
         privateKey = loadPrivateKey();
     }
     if (privateKey == null) {
         throw new Error('No private key found')
     }
-    return Crypto.decryptMessage(encrypted, privateKey);
+    if (typeof privateKey === 'string') {
+        privateKey = Crypto.importPrivateKey(privateKey);
+    }
+    return Crypto.decryptMessage(lz.decompressFromBase64(encrypted), privateKey);
 }
 
 export function exportPk(seed: string | null = null) {

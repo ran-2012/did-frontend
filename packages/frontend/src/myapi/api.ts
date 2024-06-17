@@ -1,6 +1,6 @@
 import {createSiweMessage as _createSiweMessage} from "viem/siwe";
 import {Address} from "viem";
-import {GetVcResponse} from "@did-demo/common";
+import {GetVcResponse, VcRequest} from "@did-demo/common";
 import {VerifiableCredential} from "@veramo/core";
 import {VC} from "../masca/utility.ts";
 
@@ -82,6 +82,19 @@ export class Api {
 
         checkResponse(res);
         return (await res.json()).data;
+    }
+
+    async createRequest(vc: VcRequest) {
+        const res = await fetch(API_HOST + '/vc', {
+            method: 'POST',
+            headers: {
+                ...this.tokenHeader(),
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(vc)
+        });
+
+        checkResponse(res);
     }
 
     async deleteRequest(id: string) {

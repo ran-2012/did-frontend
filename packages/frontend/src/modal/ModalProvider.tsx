@@ -2,6 +2,7 @@ import React, {createContext, ReactNode, useContext, useEffect, useRef, useState
 import {ModalBaseParam} from "./type.ts";
 import QrCodeModal from "./QrCodeModal.tsx";
 import VcDetailModal from "./VcDetailModal.tsx";
+import CreateVcRequestModal from "./CreateVcRequestModal.tsx";
 
 interface Param {
     children: ReactNode,
@@ -23,9 +24,11 @@ function ModalProvider(param: Param) {
 
     useEffect(() => {
         console.log("init modal provider")
+        modalSet.current = new Set();
         const _displayState = displayState;
         const _displayParam = displayParam;
         const _modalFuncMap: MyModal = new Map();
+
 
         function addModal<Param extends ModalBaseParam>(Component: React.FC<Param>, param: Omit<React.ComponentProps<React.FC<Param>>, keyof ModalBaseParam>) {
             const name = Component.name;
@@ -54,11 +57,13 @@ function ModalProvider(param: Param) {
             });
         }
 
+        console.log('size: ' + modalSet.current.size);
         // Add new Modal here
         addModal(QrCodeModal, {qrString: '123123123'})
         addModal(VcDetailModal, {
             title: 'VC',
         })
+        addModal(CreateVcRequestModal, {initSubjectList: []});
 
         // END
 

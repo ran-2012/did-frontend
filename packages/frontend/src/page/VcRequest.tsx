@@ -2,11 +2,17 @@ import {Button, Card, Descriptions, Flex, List, Tabs, TabsProps} from "antd";
 import {useEffect, useState} from "react";
 import {GetVcResponse} from "@did-demo/common";
 import {ReloadOutlined} from "@ant-design/icons";
+import {useAccount} from "wagmi";
 import {useMyApi} from "../myapi/MyApiProvider.tsx";
 import toast from "../toast.ts";
 import {useMyCrypto} from "../crypto/CryptoProvider.tsx";
+import {useMyModal} from "../modal/ModalProvider.tsx";
+import CreateVcRequestModal from "../modal/CreateVcRequestModal.tsx";
+import {getDid} from "../veramo/utility.ts";
 
 function MyRequest() {
+    const account = useAccount();
+    const createVcRequestModal = useMyModal(CreateVcRequestModal);
     const {api, isLogin, user} = useMyApi();
     const [listData, setListData] = useState<GetVcResponse[]>([])
 
@@ -31,7 +37,11 @@ function MyRequest() {
     return (
         <Flex className='d-flex flex-column w-100 m-2'>
             <Flex className={'w-100'}>
-                <Button type={'primary'}>Create new request</Button>
+                <Button type={'primary'} onClick={() => {
+                    createVcRequestModal?.show?.({});
+                }}>
+                    Create new request
+                </Button>
                 <Button className={'ms-2'} type={'default'} onClick={loadData}><ReloadOutlined/></Button>
 
             </Flex>
@@ -73,7 +83,7 @@ function MyKey() {
         }
         if (hasKey) {
             toast.info('You already have a key');
-            if(!await api.getPk(user)){
+            if (!await api.getPk(user)) {
                 toast.info('Retrying re-uploading')
                 const pk = crypto.exportPk()
                 await api.uploadPk(user, pk!)

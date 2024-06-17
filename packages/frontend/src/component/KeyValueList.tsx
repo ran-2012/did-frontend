@@ -24,6 +24,7 @@ class ItemParam {
 }
 
 interface Param {
+    title?: string;
     list: ItemParam[];
     onListUpdate: ((items: ItemParam[]) => void);
 }
@@ -92,7 +93,7 @@ function KeyValueList(param: Param) {
     }
 
     return (
-        <Card title={'Data fields'} extra={
+        <Card title={param.title ?? 'Data fields'} extra={
             <div className='d-flex justify-content-end'>
                 <Button className='me-2 font-monospace' type={'primary'} onClick={addItem} icon={'+'}/>
                 <Button className='font-monospace' type={'primary'} onClick={removeItem}

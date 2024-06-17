@@ -1,4 +1,4 @@
-import {VerifiableCredential} from "@veramo/core";
+import {CredentialSubject, UnsignedCredential, VerifiableCredential} from "@veramo/core";
 
 function convertKvList(list: Array<{ key: string, value: string }>) {
     const map: Map<string, string> = new Map()
@@ -44,6 +44,18 @@ function formatDid(did: string) {
     const seg = did.split(':')
     seg[seg.length - 1] = formatAddress(seg[seg.length - 1])
     return seg.join(':')
+}
+
+export function createVerifiableCredential(vc: Partial<UnsignedCredential> & {
+    credentialSubject: CredentialSubject
+}): UnsignedCredential {
+    return Object.assign({
+        issuer: vc.issuer ?? getDid('unknown'),
+        '@context': ['https://www.w3.org/2018/credentials/v1'],
+        type: vc.type ?? ['VerifiableCredential'],
+        issuanceDate: vc.issuanceDate ?? new Date().toISOString(),
+        credentialSubject: vc.credentialSubject,
+    }, vc);
 }
 
 const VcUtility = {

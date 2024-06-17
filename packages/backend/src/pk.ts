@@ -11,17 +11,13 @@ const log = getLogger('PkDb');
 const pkDb = new PkDb();
 
 pkRouter.get('/pk/user/:user', async (req, res) => {
-    if (req.user?.toLowerCase() != req.params.user.toLowerCase()) {
-        res.status(403).send({error: 'Unauthorized, invalid user'});
-        return;
-    }
     const user = req.params.user.toLowerCase();
     const result = await pkDb.get(user);
     if (!result) {
         res.status(404).send({error: 'Not found'});
         return;
     }
-    res.status(200).send({data: 'pk'});
+    res.status(200).send({data: result});
 });
 
 pkRouter.post('/pk/user/:user', async (req, res) => {
