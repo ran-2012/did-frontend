@@ -32,8 +32,8 @@ function createTestCredential(list: Array<{ key: string, value: string }>) {
     };
 }
 
-function getDid(method: string, address: string) {
-    return `did:${method}:${address}`
+function getDid(address: string, method: string = "ethr", chainId: string = "0xaa36a7") {
+    return `did:${method}:${chainId}:${address}`
 }
 
 function formatAddress(address: string) {

@@ -121,8 +121,9 @@ export class Api {
             method: 'POST',
             headers: {
                 ...this.tokenHeader(),
+                'Content-Type': 'application/json'
             },
-            body: JSON.stringify({pk})
+            body: JSON.stringify({pk, test: '12312312'})
         });
         checkResponse(res);
     }

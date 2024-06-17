@@ -1,36 +1,53 @@
-import {createContext, ReactNode, useContext, useState} from "react";
+import {createContext, ReactNode, useContext, useEffect, useState} from "react";
 import {pki} from "node-forge";
+import {useAccount} from "wagmi";
 import * as _Crypto from './crypto'
 
 export interface Param {
     children: ReactNode
 }
 
-export interface MyCrypto {
-    key: boolean,
-    createKeyPair?: (seed: string | null, save: boolean) => Promise<{
-        pk: pki.rsa.PublicKey,
-        sk: pki.rsa.PrivateKey
-    } | null>
+const Crypto = {
+    crypto: _Crypto,
+    hasKey: false,
+    pkHash: '',
+    createKeyPair: (seed: string | null = null, save: boolean = true) => Promise.resolve(),
+    saveKeyPair: (seed: string, pk: pki.rsa.PublicKey, sk: pki.rsa.PrivateKey) => {
+    }
 }
 
-const Crypto: MyCrypto = {
-    ..._Crypto,
-    key: false,
-    createKeyPair: (_, __) => Promise.resolve(null)
-}
+export type MyCrypto = typeof Crypto;
 
 export const CryptoContext = createContext<MyCrypto>(Crypto)
 
 export function CryptoProvider(param: Param) {
+    const account = useAccount();
     const [hasKey, setHasKey] = useState(_Crypto.hasKeyPair());
+    const [pkHash, setPkHash] = useState<string>('');
+
+    useEffect(() => {
+        const hasKey = _Crypto.hasKeyPair()
+        setHasKey(_Crypto.hasKeyPair())
+        if (hasKey) {
+            setPkHash(_Crypto.getPkHash());
+        } else {
+            setPkHash('');
+        }
+    }, [account.address]);
+
     return (
         <CryptoContext.Provider value={{
-            key: hasKey,
+            crypto: _Crypto,
+            hasKey,
+            pkHash,
             createKeyPair: async (seed: string | null = null, save: boolean = true) => {
-                const key = await _Crypto.createKeyPair(seed, save);
+                await _Crypto.createKeyPair(seed, save!);
                 setHasKey(true);
-                return key;
+            },
+            saveKeyPair: (seed: string, pk: pki.rsa.PublicKey | string, sk: pki.rsa.PrivateKey | string) => {
+                _Crypto.savePublicKey(seed, pk);
+                _Crypto.savePrivateKey(seed, sk);
+                setHasKey(true);
             }
         }}>
             {param.children}

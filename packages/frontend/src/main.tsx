@@ -16,6 +16,7 @@ import PageTemplate from "./template/PageTemplate.tsx";
 import VcList from "./page/VcList.tsx";
 import VpList from "./page/VpList.tsx";
 import ModalTestGround from "./page/ModalTestGround.tsx";
+import {VcRequest} from "./page/VcRequest.tsx";
 
 function createRoute(route: string, Component: React.ComponentClass | React.FC): RouteObject {
     return {
@@ -32,6 +33,7 @@ const router = createBrowserRouter([
     createRoute('vc-list', VcList),
     createRoute('vp-list', VpList),
     createRoute('test', ModalTestGround),
+    createRoute('vc-request', VcRequest),
 ])
 
 ReactDOM.createRoot(document.getElementById('root')!).render(

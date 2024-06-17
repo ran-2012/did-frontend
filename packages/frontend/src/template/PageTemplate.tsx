@@ -10,8 +10,8 @@ import ModalProvider from "../modal/ModalProvider.tsx";
 function PageTemplate() {
     const content = useLoaderData() as ReactNode;
     return (
-        <CryptoProvider>
-            <Web3Provider>
+        <Web3Provider>
+            <CryptoProvider>
                 <MyApiProvider>
                     <ModalProvider>
                         <Layout className={'vh-100'}>
@@ -44,8 +44,8 @@ function PageTemplate() {
                         </Layout>
                     </ModalProvider>
                 </MyApiProvider>
-            </Web3Provider>
-        </CryptoProvider>
+            </CryptoProvider>
+        </Web3Provider>
     );
 }
 

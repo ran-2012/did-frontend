@@ -46,14 +46,30 @@ export function loadDefaultSeed(): string | null {
     return LocalStorage.load('keyPairSeed') as string;
 }
 
-function savePublicKey(seed: string, pk: pki.rsa.PublicKey) {
+export function savePublicKey(seed: string, pk: pki.rsa.PublicKey | string) {
+    if (typeof pk === 'string') {
+        LocalStorage.save(`publicKey:${Crypto.sha256(seed)}`, pk);
+        return;
+    }
     const str = Crypto.exportPublicKey(pk);
     LocalStorage.save(`publicKey:${Crypto.sha256(seed)}`, str);
 }
 
-function savePrivateKey(seed: string, sk: pki.rsa.PrivateKey) {
+export function savePrivateKey(seed: string, sk: pki.rsa.PrivateKey | string) {
+    if (typeof sk === 'string') {
+        LocalStorage.save(`privateKey:${Crypto.sha256(seed)}`, sk);
+        return;
+    }
     const str = Crypto.exportPrivateKey(sk);
     LocalStorage.save(`privateKey:${Crypto.sha256(seed)}`, str);
+}
+
+export function getPkHash() {
+    const seed = loadDefaultSeed();
+    if (seed == null) {
+        throw new Error('No seed provided')
+    }
+    return Crypto.sha256(seed);
 }
 
 function loadPublicKey(seed: string | null = null): pki.rsa.PublicKey | null {
@@ -104,4 +120,14 @@ export function decrypt(encrypted: string, privateKey: pki.rsa.PrivateKey | null
         throw new Error('No private key found')
     }
     return Crypto.decryptMessage(encrypted, privateKey);
+}
+
+export function exportPk(seed: string | null = null) {
+    if (seed == null) {
+        seed = loadDefaultSeed();
+    }
+    if (seed == null) {
+        return null;
+    }
+    return LocalStorage.load(`publicKey:${Crypto.sha256(seed)}`) as string;
 }

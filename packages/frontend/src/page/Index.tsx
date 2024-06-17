@@ -28,10 +28,10 @@ function Index() {
     useEffect(() => {
         console.log("account: " + account.address)
         if (itemList.length == 0) {
-            setItemList([new ItemParam('id', getDid('ethr', account.address as string), false)]);
+            setItemList([new ItemParam('id', getDid(account.address as string, 'ethr'), false)]);
         } else {
             itemList[0].key = 'id';
-            itemList[0].value = getDid('ethr', account.address as string);
+            itemList[0].value = getDid(account.address as string, 'ethr');
             setItemList(itemList)
         }
     }, [account]);

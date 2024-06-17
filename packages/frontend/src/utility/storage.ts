@@ -9,6 +9,16 @@ export interface StorageLoadParam {
 }
 
 export class Storage {
+    prefix: string = '';
+
+    setPrefix(prefix: string) {
+        this.prefix = prefix;
+    }
+
+    protected getKey(key: string): string {
+        return `${this.prefix}:${key}`
+    }
+
     save(key: string, value: unknown, param: StorageSaveParam | null = null): void {
         throw new Error('Not implemented')
     }
@@ -33,12 +43,12 @@ function defaultDeserializeFunc(value: string) {
 export class _LocalStorage extends Storage {
     save(key: string, value: unknown, param: StorageSaveParam | null = null) {
         const serializeFunc = param?.serializeFunc || defaultSerializeFunc
-        localStorage.setItem(key, serializeFunc(value))
+        localStorage.setItem(this.getKey(key), serializeFunc(value))
     }
 
     load(key: string, param: StorageLoadParam | null = null): unknown | null {
         const deserializeFunc = param?.deserializeFunc || defaultDeserializeFunc
-        const res = localStorage.getItem(key)
+        const res = localStorage.getItem(this.getKey(key))
         if (!res) {
             return null
         }
@@ -46,7 +56,7 @@ export class _LocalStorage extends Storage {
     }
 
     remove(key: string) {
-        localStorage.removeItem(key)
+        localStorage.removeItem(this.getKey(key))
     }
 }
 
@@ -55,12 +65,12 @@ export class MemoryStorage extends Storage {
 
     save(key: string, value: unknown, param: StorageSaveParam | null = null) {
         const serializeFunc = param?.serializeFunc || defaultSerializeFunc
-        this.map.set(key, serializeFunc(value))
+        this.map.set(this.getKey(key), serializeFunc(value))
     }
 
     load(key: string, param: StorageLoadParam | null = null): unknown | null {
         const deserializeFunc = param?.deserializeFunc || defaultDeserializeFunc
-        const res = this.map.get(key)
+        const res = this.map.get(this.getKey(key))
         if (!res) {
             return null
         }
@@ -68,7 +78,7 @@ export class MemoryStorage extends Storage {
     }
 
     remove(key: string) {
-        this.map.delete(key)
+        this.map.delete(this.getKey(key))
     }
 }
 

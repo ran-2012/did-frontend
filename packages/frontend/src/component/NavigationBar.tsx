@@ -1,17 +1,19 @@
-import React, {useContext, useRef, useState} from "react";
+import React, {useRef, useState} from "react";
 import {ConnectKitButton} from "connectkit";
 import {Link, useNavigate} from "react-router-dom";
-import {Button, Menu, MenuProps, Tag, Tooltip} from "antd";
+import {Button, Menu, Tooltip} from "antd";
 import {ItemType} from "antd/es/menu/interface";
-import {MyApiContext, useMyApi} from "../myapi/MyApiProvider.tsx";
+import {useAccount} from "wagmi";
+import {useMyApi} from "../myapi/MyApiProvider.tsx";
 import toast from "../toast.ts";
 
 function NavigationBar() {
     const navigate = useNavigate();
+    const account = useAccount();
     const {login, isLogin, logout} = useMyApi();
     const [current, setCurrent] = useState('sign');
     const linkMap = useRef(new Map<string, string>());
-    const [menuItems, setMenuItems] = useState<ItemType[]>(getItems());
+    const [menuItems] = useState<ItemType[]>(getItems());
 
     function getItems(): ItemType[] {
         const res: ItemType[] = [];
@@ -37,6 +39,7 @@ function NavigationBar() {
             item('My Credentials', 'vc-list', '/vc-list'),
             item('My Presentations', 'vp-list', '/vp-list')
         ]));
+        res.push(item('Credential Request', 'vc-request', '/vc-request'));
         res.push(item('Mine', 'mine', '/mine'));
         res.push(item('Test', 'test', '/test'));
 
@@ -55,6 +58,10 @@ function NavigationBar() {
                         type={'link'}
                         style={{color: 'lightblue'}}
                         onClick={() => {
+                            if (!account.isConnected) {
+                                toast.error('Please connect your wallet first');
+                                return;
+                            }
                             login().then((res) => {
                                 if (res) {
                                     toast.info('Login success');

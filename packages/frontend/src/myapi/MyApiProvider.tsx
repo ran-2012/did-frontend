@@ -51,9 +51,20 @@ function hasToken() {
 
 function MyApiProvider(param: Param) {
     const account = useAccount();
+    const {user} = useContext(MyApiContext);
     const signMessage = useSignMessage();
     const [isLogin, setIsLogin] = useState<boolean>(hasToken());
     const api = useRef(MyApiDefault.api);
+
+    useEffect(() => {
+        if (user && user != account.address) {
+            console.log('User changed')
+            logout().then()
+        } else if (account.isDisconnected) {
+            console.log('Account disconnected')
+            logout().then();
+        }
+    }, [account.address, account.isDisconnected]);
 
     async function login(): Promise<boolean> {
         if (!account.isConnected) {
@@ -76,6 +87,8 @@ function MyApiProvider(param: Param) {
             if (isValid) {
                 setIsLogin(isValid);
                 return true;
+            } else {
+                console.log('Invalid saved token');
             }
         }
         const nonce = await api.current.getNonce();

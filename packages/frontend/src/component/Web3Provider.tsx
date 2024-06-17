@@ -5,6 +5,7 @@ import {ReactNode} from "react";
 import {config} from '../wagmi/config.ts'
 import MascaProvider from "../masca/MascaProvider.tsx";
 import VeramoProvider from "../veramo/VeramoProvider.tsx";
+import UserStorageProvider from "../utility/UserStorageProvider.tsx";
 
 const queryClient = new QueryClient();
 
@@ -15,13 +16,15 @@ interface Param {
 export const Web3Provider = (param: Param) => {
     return (
         <WagmiProvider config={config}>
-            <QueryClientProvider client={queryClient}>
-                <ConnectKitProvider theme="auto" options={{}}>
-                    <VeramoProvider>
-                        <MascaProvider>{param.children}</MascaProvider>
-                    </VeramoProvider>
-                </ConnectKitProvider>
-            </QueryClientProvider>
+            <UserStorageProvider>
+                <QueryClientProvider client={queryClient}>
+                    <ConnectKitProvider theme="auto" options={{}}>
+                        <VeramoProvider>
+                            <MascaProvider>{param.children}</MascaProvider>
+                        </VeramoProvider>
+                    </ConnectKitProvider>
+                </QueryClientProvider>
+            </UserStorageProvider>
         </WagmiProvider>
     );
 };
