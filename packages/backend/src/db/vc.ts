@@ -9,6 +9,7 @@ export class VcRequestData implements GetVcResponse {
     _id!: mongoose.Types.ObjectId;
 
     get id() {
+        console.log('id: ' + this._id.toString());
         return this._id.toString();
     }
 
@@ -26,14 +27,17 @@ export class VcRequestData implements GetVcResponse {
     vc = '';
     @prop()
     status = VcRequestStatus.PENDING;
+    @prop()
+    holderEncryptedVc = '';
 
-    constructor(holder: string, issuer: string, issuerPublicKey = '', publicKey = '', signedVc = '', vc = '', status: VcRequestStatus = VcRequestStatus.PENDING) {
+    constructor(holder: string, issuer: string, issuerPublicKey = '', publicKey = '', signedVc = '', vc = '', holderEncryptedVc: string, status: VcRequestStatus = VcRequestStatus.PENDING) {
         this.holder = holder;
         this.issuer = issuer;
         this.issuerPublicKey = issuerPublicKey;
         this.publicKey = publicKey;
         this.signedVc = signedVc;
         this.vc = vc;
+        this.holderEncryptedVc = holderEncryptedVc;
         this.status = status;
     }
 }
@@ -58,12 +62,17 @@ export class VcDb {
     }
 
     async get(id: string) {
-        return VcModel.findById(id).exec();
+        try {
+            return await VcModel.findOne({_id: id}).exec();
+        } catch (e) {
+            return null;
+        }
     }
 
-    async create(data: VcRequest & WithStatus) {
+    async create(data: VcRequest & WithStatus): Promise<VcRequestData> {
         const vc = await VcModel.create(data);
         await vc.save();
+        return vc;
     }
 
     async update(id: string, data: Partial<VcRequestData>) {

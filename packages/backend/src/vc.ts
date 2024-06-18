@@ -5,6 +5,7 @@ import {VcDb} from './db/vc';
 import {getLogger} from './log';
 
 const vcRouter: Router = Router();
+const log = getLogger('VcRouter');
 
 vcRouter.use(checkSiwe);
 
@@ -19,20 +20,28 @@ const getVcData: Handler = async (req, res, next) => {
 
 };
 
-const log = getLogger('VcDb');
 const vcDb = new VcDb();
 
 vcRouter.post('/vc', async (req, res) => {
-    const {holder, issuer, issuerPublicKey, publicKey, signedVc, vc} = req.body as VcRequest;
+    const {holder, issuer, issuerPublicKey, publicKey, signedVc, vc, holderEncryptedVc} = req.body as VcRequest;
     if (!holder || !issuer) {
         res.status(400).send({error: 'Missing required fields'});
         return;
     }
 
-    await vcDb.create({holder: holder.toLowerCase(), issuer: issuer.toLowerCase(), issuerPublicKey, publicKey, signedVc, vc, status: VcRequestStatus.PENDING});
+    const data = await vcDb.create({
+        holder: holder.toLowerCase(),
+        issuer: issuer.toLowerCase(),
+        issuerPublicKey,
+        publicKey,
+        signedVc,
+        vc,
+        holderEncryptedVc,
+        status: VcRequestStatus.PENDING
+    });
     //log
     log.i('Data created');
-    res.status(200).send();
+    res.status(200).send({data});
 });
 
 vcRouter.get('/vc/holder/:holder', async (req, res) => {
@@ -56,7 +65,7 @@ vcRouter.get('/vc/issuer/:issuer', async (req, res) => {
 });
 
 vcRouter.delete('/vc/:id', getVcData, async (req, res) => {
-    if (req.vcData!.holder != req.user) {
+    if (req.vcData!.holder.toLowerCase() != req.user?.toLowerCase()) {
         res.status(403).send({error: 'Unauthorized, only holder can delete VC'});
         return;
     }

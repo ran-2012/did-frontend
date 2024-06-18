@@ -3,7 +3,7 @@ export default {
     port: 3000,
 
     log: {
-        defaultLevel: 'info',
+        defaultLevel: 'debug',
         file: {
             enable: false,
             maxSize: 1000000,

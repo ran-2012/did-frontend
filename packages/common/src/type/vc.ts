@@ -14,6 +14,7 @@ export interface VcRequest {
 
     vc: string,
     signedVc: string,
+    holderEncryptedVc: string;
 }
 
 export enum VcRequestStatus {
@@ -27,7 +28,34 @@ export interface WithStatus {
     status: VcRequestStatus,
 }
 
-export type GetVcResponse = VcRequest & WithId & WithStatus;
+export class GetVcResponse implements VcRequest {
+    _id: unknown = null;
+    get id(): string {
+        return this._id?.toString() || 'unknown';
+    }
+
+    holder: string = '';
+    issuer: string = '';
+    issuerPublicKey: string = '';
+    publicKey: string = '';
+    signedVc: string = '';
+    vc: string = '';
+    holderEncryptedVc: string = '';
+    status: VcRequestStatus = VcRequestStatus.PENDING;
+
+    constructor(source: GetVcResponse) {
+        this._id = source._id;
+        this.holder = source.holder;
+        this.holder = source.holder;
+        this.issuer = source.issuer;
+        this.issuerPublicKey = source.issuerPublicKey;
+        this.publicKey = source.publicKey;
+        this.signedVc = source.signedVc;
+        this.vc = source.vc;
+        this.holderEncryptedVc = source.holderEncryptedVc;
+        this.status = source.status;
+    }
+}
 
 /**
  * Sent out VC requests
