@@ -1,4 +1,4 @@
-import {jsbn, md, pki, random} from 'node-forge';
+import {cipher, jsbn, md, pki, random, util} from 'node-forge';
 import * as lz from 'lz-string';
 
 /**
@@ -15,11 +15,41 @@ function createKeyPair(seed: string | null = null) {
 }
 
 function encryptMessage(message: string, publicKey: pki.rsa.PublicKey) {
-    return publicKey.encrypt(message, 'RSAES-PKCS1-V1_5');
+    // AES-256
+    const key = random.getBytesSync(32);
+    const iv = random.getBytesSync(32);
+    const c = cipher.createCipher('AES-CBC', key);
+
+    c.start({iv});
+    c.update(util.createBuffer(message));
+    c.finish;
+
+    const encrypted = util.encode64(c.output.getBytes());
+    const encryptedKey = util.encode64(publicKey.encrypt(key, 'RSAES-PKCS1-V1_5'));
+    const encryptedIv = util.encode64(publicKey.encrypt(iv, 'RSAES-PKCS1-V1_5'));
+
+    const result = {
+        encryptedMessage: encrypted,
+        encryptedKey: encryptedKey,
+        encryptedIv: encryptedIv
+    }
+
+    return lz.compressToBase64(JSON.stringify(result));
 }
 
 function decryptMessage(encrypted: string, privateKey: pki.rsa.PrivateKey) {
-    return privateKey.decrypt(encrypted, 'RSAES-PKCS1-V1_5');
+    const json = JSON.parse(lz.decompressFromBase64(encrypted));
+
+    const {encryptedMessage, encryptedKey, encryptedIv} = json;
+    const key = privateKey.decrypt(util.decode64(encryptedKey), 'RSAES-PKCS1-V1_5');
+    const iv = privateKey.decrypt(util.decode64(encryptedIv), 'RSAES-PKCS1-V1_5');
+    const c = cipher.createDecipher('AES-CBC', key);
+
+    c.start({iv});
+    c.update(util.createBuffer(util.decode64(encryptedMessage)));
+    c.finish();
+
+    return c.output.toString();
 }
 
 function exportPublicKey(publicKey: pki.rsa.PublicKey) {
