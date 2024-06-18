@@ -46,6 +46,10 @@ function formatDid(did: string) {
     return seg.join(':')
 }
 
+export function formatDidFromAddress(address: string, method: string = "ethr", chainId: string = "0xaa36a7") {
+    return formatDid(getDid(address, method, chainId));
+}
+
 export function createVerifiableCredential(vc: Partial<UnsignedCredential> & {
     credentialSubject: CredentialSubject
 }): UnsignedCredential {

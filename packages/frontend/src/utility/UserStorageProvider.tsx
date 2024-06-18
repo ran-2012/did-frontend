@@ -9,11 +9,17 @@ interface Param {
 const UserStorageContext = createContext({storage: LocalStorage})
 
 
+/**
+ * Do nothing currently
+ * @param param
+ * @constructor
+ * @Deprecated
+ */
 function UserStorageProvider(param: Param) {
     const account = useAccount()
 
     useEffect(() => {
-        LocalStorage.setPrefix(account.address ?? '')
+        // LocalStorage.setPrefix(account.address ?? '')
     }, [account.address]);
 
     return (

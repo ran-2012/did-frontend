@@ -62,6 +62,14 @@ export class Api {
         return (await res.json()).isValid;
     }
 
+    private convertVcResponse(list: GetVcResponse[]) {
+        const res: GetVcResponse[] = [];
+        for (const vcResponse of list) {
+            res.push(new GetVcResponse(vcResponse));
+        }
+        return res;
+    }
+
     async getMyRequestList(user: string): Promise<GetVcResponse[]> {
         const res = await fetch(API_HOST + '/vc/holder/' + user, {
             headers: {
@@ -70,7 +78,7 @@ export class Api {
         });
 
         checkResponse(res);
-        return (await res.json()).data;
+        return this.convertVcResponse((await res.json()).data);
     }
 
     async getReceivedRequestList(user: string): Promise<GetVcResponse[]> {
@@ -81,7 +89,7 @@ export class Api {
         });
 
         checkResponse(res);
-        return (await res.json()).data;
+        return this.convertVcResponse((await res.json()).data);
     }
 
     async createRequest(vc: VcRequest) {

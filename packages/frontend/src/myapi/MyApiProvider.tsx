@@ -86,6 +86,7 @@ function MyApiProvider(param: Param) {
 
             if (isValid) {
                 setIsLogin(isValid);
+                LocalStorage.setPrefix(account.address)
                 return true;
             } else {
                 console.log('Invalid saved token');
@@ -100,6 +101,7 @@ function MyApiProvider(param: Param) {
             console.log("Save token")
             api.current.setToken(JSON.stringify({message, signature}));
             saveToken({message, signature});
+            LocalStorage.setPrefix(account.address)
         }
         setIsLogin(isValid);
         return isValid;
@@ -108,6 +110,7 @@ function MyApiProvider(param: Param) {
     async function logout(): Promise<boolean> {
         removeToken();
         setIsLogin(false);
+        LocalStorage.setPrefix('');
         return true;
     }
 

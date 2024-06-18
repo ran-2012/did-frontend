@@ -1,4 +1,4 @@
-import {Button, Card, Col, Flex, Form, Input, Modal, Row, Space} from "antd";
+import {Button, Card, Flex, Form, Input, Modal, Row, Space} from "antd";
 import React, {useEffect, useState} from "react";
 import {useAccount} from "wagmi";
 import KeyValueList, {ItemParam} from "../component/KeyValueList.tsx";
@@ -18,6 +18,53 @@ type FieldType = {
     type: string,
 };
 
+function MyFormContent() {
+    const form = Form.useFormInstance<FieldType>();
+
+    useEffect(() => {
+        form.setFieldsValue({
+            issuanceDate: (new Date()).toISOString(),
+            type: "VerifiableCredential, DidDemoCredential"
+        });
+    }, [form]);
+
+    return (
+        <Card>
+            <Form.Item<string>
+                label={'Issuer'}
+                name={'issuer'}
+                rules={[{required: true, message: 'Please input issuer'}]}>
+                <Input className={'font-monospace'} addonBefore={'did:ethr:0xaa36a7:'}/>
+            </Form.Item>
+
+            <Form.Item<string>
+                label={'Issuance Date'}
+                initialValue={new Date().toISOString()}
+                rules={[{required: true}]}>
+                <Space.Compact className={'w-100 d-flex'} style={{height: 'fit-content'}}>
+                    <Form.Item noStyle={true} name={'issuanceDate'} className={'flex-grow-1'}>
+                        <Input
+                            className={'font-monospace'}
+                        />
+                    </Form.Item>
+                    <Button type="primary"
+                            onClick={() => form.setFieldValue('issuanceDate', (new Date()).toISOString())}>
+                        Current time</Button>
+                </Space.Compact>
+            </Form.Item>
+
+            <Form.Item<string>
+                label={'Type'}
+                initialValue={"VerifiableCredential, DidDemoCredential"}
+                name={'type'}
+                rules={[{required: true}]}>
+                <Input className={'font-monospace'}/>
+            </Form.Item>
+        </Card>
+
+    )
+}
+
 function CreateVcRequestModal(param: Param) {
     const {hasKey, crypto} = useMyCrypto();
     const {isLogin, api} = useMyApi();
@@ -27,12 +74,13 @@ function CreateVcRequestModal(param: Param) {
         useState<ItemParam[]>(param.initSubjectList ?? []);
 
     useEffect(() => {
-        // if(form.)
-        form.setFieldsValue({
-            issuanceDate: (new Date()).toISOString(),
-            type: "VerifiableCredential, DidDemoCredential"
-        });
-    }, [form]);
+        if (!hasKey) {
+            return;
+        }
+        const e = crypto.encrypt("123");
+        console.log('Decrypt: ' + crypto.decrypt(e));
+    }, [hasKey]);
+
 
     useEffect(() => {
         if (itemList.length == 0) {
@@ -60,6 +108,7 @@ function CreateVcRequestModal(param: Param) {
             credentialSubject: subject
         })
         let vcStr = JSON.stringify(vc);
+        let holderEncryptedVc = vcStr;
 
         setTimeout(async () => {
             console.log(vcStr);
@@ -72,10 +121,22 @@ function CreateVcRequestModal(param: Param) {
                 toast.warn("Key not found, sending plain text");
             } else {
                 toast.info("Encrypting VC")
-                vcStr = crypto.encrypt(vcStr, issuerPk)
+                try {
+                    vcStr = crypto.encrypt(vcStr, issuerPk)
+                } catch (e) {
+                    console.log(e);
+                }
             }
             if (!hasKey) {
                 toast.warn("No key found, will receive plain text");
+            } else {
+                try {
+                    holderEncryptedVc = crypto.encrypt(holderEncryptedVc);
+                } catch (e) {
+                    const error = e as Error;
+                    toast.error("Failed to encrypt vc: " + error.message);
+                    console.log(e);
+                }
             }
 
             try {
@@ -86,10 +147,12 @@ function CreateVcRequestModal(param: Param) {
                     issuerPublicKey: issuerPk ?? '',
                     vc: vcStr,
                     signedVc: '',
+                    holderEncryptedVc
                 })
             } catch (e) {
                 const error = e as Error;
                 toast.error(error.message);
+                console.log(e);
                 return;
             }
 
@@ -119,39 +182,7 @@ function CreateVcRequestModal(param: Param) {
                 onFinishFailed={() => {
                 }}>
                 <Flex className={'m-2 w-100 overflow-auto'} vertical={true}>
-                    <Card>
-                        <Form.Item<string>
-                            label={'Issuer'}
-                            name={'issuer'}
-                            rules={[{required: true, message: 'Please input issuer'}]}>
-                            <Input addonBefore={'did:ethr:0xaa36a7:'}/>
-                        </Form.Item>
-
-                        <Form.Item<string>
-                            label={'Issuance Date'}
-                            initialValue={new Date().toISOString()}
-                            rules={[{required: true}]}>
-                            <Space.Compact className={'w-100 d-flex'} style={{height: 'fit-content'}}>
-                                <Form.Item noStyle={true} name={'issuanceDate'} className={'flex-grow-1'}>
-                                    <Input
-                                        className={'font-monospace'}
-                                    />
-                                </Form.Item>
-                                <Button type="primary"
-                                        onClick={() => form.setFieldValue('issuanceDate', (new Date()).toISOString())}>
-                                    Current time</Button>
-                            </Space.Compact>
-                        </Form.Item>
-
-                        <Form.Item<string>
-                            label={'Type'}
-                            initialValue={"VerifiableCredential, DidDemoCredential"}
-                            name={'type'}
-                            rules={[{required: true}]}>
-                            <Input className={'font-monospace'}
-                                   defaultValue={"VerifiableCredential, DidDemoCredential"}/>
-                        </Form.Item>
-                    </Card>
+                    <MyFormContent/>
                     <div className={'w-100 mt-2'}>
                         <KeyValueList title={'Subjects'} list={itemList} onListUpdate={(items) => {
                             console.log(JSON.stringify(items));

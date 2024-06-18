@@ -1,53 +1,119 @@
-import {Button, Card, Descriptions, Flex, List, Tabs, TabsProps} from "antd";
+import {Button, Card, Descriptions, Flex, List, Tabs, TabsProps, Tooltip} from "antd";
 import {useEffect, useState} from "react";
 import {GetVcResponse} from "@did-demo/common";
-import {ReloadOutlined} from "@ant-design/icons";
+import {DeleteOutlined, ReloadOutlined} from "@ant-design/icons";
 import {useAccount} from "wagmi";
+import {VerifiableCredential} from "@veramo/core";
 import {useMyApi} from "../myapi/MyApiProvider.tsx";
 import toast from "../toast.ts";
 import {useMyCrypto} from "../crypto/CryptoProvider.tsx";
 import {useMyModal} from "../modal/ModalProvider.tsx";
 import CreateVcRequestModal from "../modal/CreateVcRequestModal.tsx";
-import {getDid} from "../veramo/utility.ts";
+import VcRequestList from "../component/VcRequestList.tsx";
+import VcDetailModal from "../modal/VcDetailModal.tsx";
 
 function MyRequest() {
     const account = useAccount();
+    const {crypto} = useMyCrypto();
     const createVcRequestModal = useMyModal(CreateVcRequestModal);
     const {api, isLogin, user} = useMyApi();
+    const [loading, setLoading] = useState<boolean>(false);
     const [listData, setListData] = useState<GetVcResponse[]>([])
+    const showVcModalFunc = useMyModal(VcDetailModal);
 
     useEffect(() => {
-        if (isLogin && user) {
-            loadData();
-        }
-    }, [isLogin, user]);
+        loadData();
+    }, [isLogin]);
 
     function loadData() {
+        if (!isLogin) {
+            toast.warn('Please login first')
+            return;
+        }
+        setLoading(true);
         api.getMyRequestList(user).then((res) => {
             if (res.length == 0) {
                 toast.info("No request found");
             }
             setListData(res);
-            console.log(JSON.stringify(res));
+            setLoading(false);
+            console.log(res)
         }).catch((e) => {
+            setLoading(false);
             toast.error(e.toString());
         })
     }
 
+    function viewDetail(data: GetVcResponse) {
+        if (!data.holderEncryptedVc && !data.signedVc) {
+            toast.error('No valid data found')
+            return;
+        }
+        let vcStr = '';
+        try {
+            if (data.signedVc) {
+                if (data.publicKey) {
+                    vcStr = crypto.decrypt(data.signedVc)
+                } else {
+                    vcStr = data.signedVc
+                }
+            } else {
+                if (data.publicKey) {
+                    vcStr = crypto.decrypt(data.holderEncryptedVc)
+                } else {
+                    vcStr = data.holderEncryptedVc
+                }
+            }
+        } catch (e) {
+            const error = e as Error;
+            toast.error('Failed to decrypt vc: ' + error.toString())
+            return;
+        }
+
+        try {
+            const vc = JSON.parse(vcStr) as VerifiableCredential
+            showVcModalFunc?.show({
+                vc
+            })
+        } catch (e) {
+            const error = e as Error;
+            toast.error('Failed to parse vc: ' + error.toString())
+        }
+
+    }
+
     return (
-        <Flex className='d-flex flex-column w-100 m-2'>
-            <Flex className={'w-100'}>
+        <Flex className='d-flex flex-column p-2'>
+            <Flex className={'w-100 mb-2'}>
                 <Button type={'primary'} onClick={() => {
                     createVcRequestModal?.show?.({});
                 }}>
                     Create new request
                 </Button>
                 <Button className={'ms-2'} type={'default'} onClick={loadData}><ReloadOutlined/></Button>
-
             </Flex>
-            <List>
-
-            </List>
+            <VcRequestList dataList={listData} isLoading={loading} renderActionList={(data: GetVcResponse) => {
+                return [
+                    <a onClick={() => viewDetail(data)} style={{color: '#3e77f8'}}>Detail</a>,
+                    <a onClick={() => {
+                        setTimeout(async () => {
+                            toast('Deleting request')
+                            try {
+                                console.log('id: ' + data.id)
+                                await api.deleteRequest(data.id)
+                            } catch (e) {
+                                const error = e as Error;
+                                toast.error('Failed to delete request: ' + error.message)
+                            }
+                            loadData();
+                        });
+                    }}>
+                        <Tooltip title={'Delete my Request'}>
+                            <DeleteOutlined className={'fs-5'} style={{color: 'red'}}/>
+                        </Tooltip>
+                    </a>
+                ];
+            }}/>
         </Flex>
     )
 }
