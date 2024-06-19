@@ -8,13 +8,12 @@ import toast from "../toast.ts";
 import {VcUtility} from "../veramo/utility.ts";
 import {useMasca, useMascaCallWrapper, VC} from "../masca/utility.ts";
 import {ValidState, VcUiUtility} from "../veramo/uiUtility.tsx";
+import {ModalBaseParam} from "./type.ts";
 
-interface Param {
+interface Param extends ModalBaseParam {
     title?: string
     vc?: VerifiableCredential
-    show: boolean
     showSaveButton?: boolean
-    onClose: () => void;
 }
 
 interface SubjectData {
@@ -39,7 +38,12 @@ function VcDetailModal(param: Param) {
 
     useEffect(() => {
         if (!param.show) return;
+        if (!param.vc?.proof) {
+            setIsValid(ValidState.NoProof);
+            return;
+        }
         setTimeout(async () => {
+
             if (masca.api) {
                 const res = await masca.api.verifyData({credential: credential});
                 console.log(res)

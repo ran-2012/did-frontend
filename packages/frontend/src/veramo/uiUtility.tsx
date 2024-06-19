@@ -10,6 +10,7 @@ export enum ValidState {
     Verifying,
     Valid,
     Invalid,
+    NoProof,
     Unknown,
 }
 
@@ -37,7 +38,13 @@ const VcUiUtility = {
                         <Spin indicator={<LoadingOutlined spin/>}/>
                     </Tooltip>
                 );
-            case ValidState.Unknown:
+            case ValidState.NoProof:
+                return (
+                    <Tooltip title={'No proof in this VC'}>
+                        <Tag color={'red'}>No proof</Tag>
+                    </Tooltip>
+                )
+            default:
                 return (<Tag style={{color: 'gray'}}>Unknown</Tag>)
         }
     }
