@@ -183,11 +183,6 @@ function ReceivedRequest() {
         return vcStr;
     }
 
-    function encryptSignedVc(vc: VerifiableCredential) {
-        const vcStr = JSON.stringify(vc);
-        return crypto.encrypt(vcStr);
-    }
-
     function viewDetail(data: GetVcResponse) {
         const vcStr = getFullText(data);
         if (!vcStr) {
@@ -211,6 +206,10 @@ function ReceivedRequest() {
     }
 
     function sign(data: GetVcResponse) {
+        if (data.status != VcRequestStatus.PENDING) {
+            toast.error('Only pending request can be signed')
+            return;
+        }
         setTimeout(async () => {
             const vcStr = getFullText(data);
 
@@ -245,8 +244,15 @@ function ReceivedRequest() {
 
             try {
                 const vc = result.data;
-                const encryptedVc = encryptSignedVc(vc);
-                await api.uploadSignedVc(data.id, encryptedVc)
+                const vcStr = JSON.stringify(vc);
+
+                if (!data.publicKey) {
+                    toast.warn('No holder public key found, sending plaintext')
+                    await api.uploadSignedVc(data.id, vcStr);
+                } else {
+                    const encryptedVc = crypto.encrypt(vcStr, data.publicKey);
+                    await api.uploadSignedVc(data.id, encryptedVc)
+                }
 
                 loadData()
             } catch (e) {
