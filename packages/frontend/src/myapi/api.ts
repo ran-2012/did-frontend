@@ -1,10 +1,8 @@
 import {createSiweMessage as _createSiweMessage} from "viem/siwe";
 import {Address} from "viem";
 import {GetVcResponse, VcRequest} from "@did-demo/common";
-import {VerifiableCredential} from "@veramo/core";
-import {VC} from "../masca/utility.ts";
 
-const API_HOST = 'http://localhost:3000'
+const API_HOST = import.meta.env.VITE_API_HOST ?? 'http://localhost:3000';
 
 export function createSiweMessage(address: Address, chainId: number, nonce: string,) {
     return _createSiweMessage({

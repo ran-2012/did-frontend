@@ -22,7 +22,6 @@ import {Resolver} from 'did-resolver';
 import {getResolver as didEnsResolver, type ProviderConfiguration,} from 'ens-did-resolver';
 import {JsonRpcProvider} from 'ethers';
 import {getResolver as didEthrResolver} from 'ethr-did-resolver';
-import {VerificationService} from "@blockchain-lab-um/extended-verification";
 
 export type Agent = TAgent<
     IDIDManager &

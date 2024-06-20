@@ -1,6 +1,6 @@
 export default {
     hostname: process.env.HOSTNAME ?? 'localhost',
-    port: 3000,
+    port: process.env.API_PORT ?? 3000,
 
     log: {
         defaultLevel: 'debug',
@@ -13,6 +13,6 @@ export default {
     },
 
     mongodb: {
-        connectStr: 'mongodb://localhost:27017/dev'
+        connectStr: process.env.MONGODB_STR ?? 'mongodb://localhost:27017/dev'
     }
 };

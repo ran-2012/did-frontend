@@ -25,7 +25,7 @@ export default defineConfig(({command, mode}) => {
     return {
         plugins: [react()],
         server: {
-            port: 3080,
+            port: Number.parseInt(process.env.PAGE_PORT) ?? 3080,
             watch: {
                 usePolling: true
             }

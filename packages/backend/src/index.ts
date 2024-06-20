@@ -41,23 +41,13 @@ app.use('/', siweRouter);
 app.use('/', vcRouter);
 app.use('/', pkRouter);
 
-app.get('/', (req, res) => {
-    res.send('Hello World!');
-    res.status(200);
-});
-
-app.post('/public-key', (req, res) => {
-    const pk2 = new PublicKey('did:example:123', 'key');
-    const pK = JSON.parse(req.body) as PublicKey;
-});
-
 app.use(errorHandler);
 
 async function startServer() {
     await new Promise<void>((resolve) => {
         app.listen(config.port, () => {
             log.i(`Listening on port ${config.port}`);
-            log.d('Access at http://localhost:3000/');
+            log.d(`Access at http://localhost:${config.port}/`);
             resolve();
         });
     });
