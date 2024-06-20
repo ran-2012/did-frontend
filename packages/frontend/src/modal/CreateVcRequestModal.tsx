@@ -74,15 +74,6 @@ function CreateVcRequestModal(param: Param) {
         useState<ItemParam[]>(param.initSubjectList ?? []);
 
     useEffect(() => {
-        if (!hasKey) {
-            return;
-        }
-        const e = crypto.encrypt("123");
-        console.log('Decrypt: ' + crypto.decrypt(e));
-    }, [hasKey]);
-
-
-    useEffect(() => {
         if (itemList.length == 0) {
             setItemList([new ItemParam(0, 'id', getDid(account.address as string, 'ethr'), false)]);
         } else {
@@ -102,7 +93,7 @@ function CreateVcRequestModal(param: Param) {
         })
 
         const vc = createVerifiableCredential({
-            issuer,
+            issuer: getDid(issuer),
             issuanceDate,
             type: values.type.split(','),
             credentialSubject: subject
@@ -156,6 +147,7 @@ function CreateVcRequestModal(param: Param) {
                 return;
             }
 
+            toast.success('Request sent');
             param.onClose();
         })
     }

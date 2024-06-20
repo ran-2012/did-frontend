@@ -125,7 +125,7 @@ export class Api {
         checkResponse(res);
     }
 
-    async uploadSignedVc(id: string, signedVc: VerifiableCredential) {
+    async uploadSignedVc(id: string, signedVc: string) {
         const res = await fetch(API_HOST + '/vc/' + id, {
             method: 'PUT',
             headers: {

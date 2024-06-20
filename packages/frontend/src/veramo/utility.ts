@@ -10,6 +10,27 @@ function convertKvList(list: Array<{ key: string, value: string }>) {
     return Object.fromEntries(map);
 }
 
+// Sample from Masca
+/*
+{
+  "type": [
+    "VerifiableCredential",
+    "MascaUserCredential"
+  ],
+  "credentialSubject": {
+    "id": "did:ethr:0xaa36a7:0x0fdf03d766559816e67b29df9de663ae1a6e6101",
+    "type": "Regular User"
+  },
+  "credentialSchema": {
+    "id": "https://beta.api.schemas.serto.id/v1/public/program-completion-certificate/1.0/json-schema.json",
+    "type": "JsonSchemaValidator2018"
+  },
+  "@context": [
+    "https://www.w3.org/2018/credentials/v1",
+    "https://beta.api.schemas.serto.id/v1/public/program-completion-certificate/1.0/ld-context.json"
+  ]
+}
+*/
 function createTestCredential(list: Array<{ key: string, value: string }>) {
     // EXAMPLE:
     // credentialSubject: {

@@ -138,3 +138,7 @@ export function exportPk(seed: string | null = null) {
     }
     return LocalStorage.load(`publicKey:${Crypto.sha256(seed)}`) as string;
 }
+
+export function sha256(data: string) {
+    return Crypto.sha256(data);
+}

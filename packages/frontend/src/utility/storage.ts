@@ -16,7 +16,11 @@ export class Storage {
     }
 
     protected getKey(key: string): string {
-        return `${this.prefix}:${key}`
+        if (this.prefix) {
+            return `${this.prefix}:${key}`
+        } else {
+            return key;
+        }
     }
 
     save(key: string, value: unknown, param: StorageSaveParam | null = null): void {

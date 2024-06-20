@@ -1,6 +1,7 @@
 import {createContext, ReactNode, useContext, useEffect, useState} from "react";
 import {pki} from "node-forge";
 import {useAccount} from "wagmi";
+import {useMyApi} from "../myapi/MyApiProvider.tsx";
 import * as _Crypto from './crypto'
 
 export interface Param {
@@ -21,19 +22,20 @@ export type MyCrypto = typeof Crypto;
 export const CryptoContext = createContext<MyCrypto>(Crypto)
 
 export function CryptoProvider(param: Param) {
-    const account = useAccount();
+    const {isLogin} = useMyApi();
     const [hasKey, setHasKey] = useState(_Crypto.hasKeyPair());
     const [pkHash, setPkHash] = useState<string>('');
 
     useEffect(() => {
         const hasKey = _Crypto.hasKeyPair()
-        setHasKey(_Crypto.hasKeyPair())
+        console.log('hasKey: ' + hasKey)
+        setHasKey(hasKey);
         if (hasKey) {
             setPkHash(_Crypto.getPkHash());
         } else {
             setPkHash('');
         }
-    }, [account.address]);
+    }, [isLogin]);
 
     return (
         <CryptoContext.Provider value={{

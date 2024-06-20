@@ -75,7 +75,7 @@ vcRouter.delete('/vc/:id', getVcData, async (req, res) => {
 });
 
 vcRouter.put('/vc/:id/', getVcData, async (req, res) => {
-    const issuer = req.vcData!.issuer;
+    const issuer = req.vcData!.issuer.toLowerCase();
     const {signedVc} = req.body as Partial<VcRequest>;
     if (!issuer) {
         res.status(400).send({error: 'Missing issuer'});
@@ -86,7 +86,7 @@ vcRouter.put('/vc/:id/', getVcData, async (req, res) => {
         return;
     }
 
-    if (issuer != req.user) {
+    if (issuer != req.user?.toLowerCase()) {
         res.status(403).send({error: 'Unauthorized'});
         return;
     }

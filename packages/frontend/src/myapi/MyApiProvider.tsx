@@ -37,8 +37,8 @@ function saveToken(siweRequest: SiweRequest) {
     LocalStorage.save('siweRequest', siweRequest);
 }
 
-function loadToken(): SiweRequest | null {
-    return LocalStorage.load('siweRequest') as SiweRequest;
+function loadToken(user: string = ''): SiweRequest | null {
+    return LocalStorage.load(`${user}:siweRequest`) as SiweRequest;
 }
 
 function removeToken() {
@@ -51,10 +51,15 @@ function hasToken() {
 
 function MyApiProvider(param: Param) {
     const account = useAccount();
-    const {user} = useContext(MyApiContext);
+    const [user, setUser] = useState<string>(account.address ?? '');
     const signMessage = useSignMessage();
     const [isLogin, setIsLogin] = useState<boolean>(hasToken());
     const api = useRef(MyApiDefault.api);
+
+    useEffect(() => {
+        console.log('Account changed: ' + account.address);
+        setUser(account.address ?? '')
+    }, [account.address]);
 
     useEffect(() => {
         if (user && user != account.address) {
@@ -79,14 +84,15 @@ function MyApiProvider(param: Param) {
         if (!account.address) throw new Error("Account not found");
         if (!account.chainId) throw new Error("ChainId not found");
 
+        LocalStorage.setPrefix(account.address);
         const savedToken = loadToken();
+
         if (savedToken) {
             console.log('Found saved token')
             const isValid = await api.current.verify(savedToken.message, savedToken.signature);
 
             if (isValid) {
                 setIsLogin(isValid);
-                LocalStorage.setPrefix(account.address)
                 return true;
             } else {
                 console.log('Invalid saved token');
@@ -96,13 +102,16 @@ function MyApiProvider(param: Param) {
         console.log(`nonce: ${nonce}`);
         const message = createSiweMessage(account.address, account.chainId, nonce);
         const signature = await signMessage.signMessageAsync({message});
+
         const isValid = await api.current.verify(message, signature);
         if (isValid) {
             console.log("Save token")
             api.current.setToken(JSON.stringify({message, signature}));
             saveToken({message, signature});
-            LocalStorage.setPrefix(account.address)
+        } else {
+            LocalStorage.setPrefix('');
         }
+
         setIsLogin(isValid);
         return isValid;
     }
@@ -122,7 +131,7 @@ function MyApiProvider(param: Param) {
         <MyApiContext.Provider value={{
             isLogin,
             api: api.current,
-            user: account.address ?? '',
+            user,
             login,
             logout,
         }}>

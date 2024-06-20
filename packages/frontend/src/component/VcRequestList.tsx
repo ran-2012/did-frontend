@@ -3,6 +3,7 @@ import {GetVcResponse, VcRequestStatus} from "@did-demo/common";
 import {QrcodeOutlined} from "@ant-design/icons";
 import {ReactNode} from "react";
 import {formatDid, formatDidFromAddress, getDid} from "../veramo/utility.ts";
+import {useMyCrypto} from "../crypto/CryptoProvider.tsx";
 
 interface Param {
     dataList: GetVcResponse[];
@@ -11,6 +12,7 @@ interface Param {
 }
 
 function VcRequestList(param: Param) {
+    const {crypto} = useMyCrypto();
 
     function getStatusTag(data: GetVcResponse) {
         switch (data.status) {
@@ -39,10 +41,13 @@ function VcRequestList(param: Param) {
             renderItem={(data, index) => (
                 <Flex className={'hover'}
                       style={{borderBottom: '1px solid lightgray'}}>
-                    <List.Item className={'flex-grow-1'}
-                               key={index} actions={[
-                        ...(param.renderActionList?.(data) ?? [])
-                    ]}>
+                    <List.Item
+                        className={'flex-grow-1'}
+                        key={index}
+                        actions={[
+                            ...(param.renderActionList?.(data) ?? [])
+                        ]}>
+
                         <div className={'fs-5 me-5'}>{index + 1}</div>
                         <Space className={'flex-grow-1'} size={'large'}>
                             <Space className={'font-monospace'} direction={'vertical'}>
@@ -56,6 +61,7 @@ function VcRequestList(param: Param) {
                                 </div>
                             </Space>
                             {getStatusTag(data)}
+                            <Tooltip title={crypto.sha256(data.vc)}><Tag>Hash</Tag></Tooltip>
                         </Space>
                     </List.Item>
                 </Flex>

@@ -3,6 +3,7 @@ import {ModalBaseParam} from "./type.ts";
 import QrCodeModal from "./QrCodeModal.tsx";
 import VcDetailModal from "./VcDetailModal.tsx";
 import CreateVcRequestModal from "./CreateVcRequestModal.tsx";
+import JsonRawModal from "./JsonRawModal.tsx";
 
 interface Param {
     children: ReactNode,
@@ -64,6 +65,7 @@ function ModalProvider(param: Param) {
             title: 'VC',
         })
         addModal(CreateVcRequestModal, {initSubjectList: []});
+        addModal(JsonRawModal, {json: '{}'});
 
         // END
 

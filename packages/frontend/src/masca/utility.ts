@@ -34,7 +34,7 @@ async function connectMasca(address: Hex) {
     const enableResult = await enableMasca(address, {
         snapId: MascaConfig.snapId, // Defaults to `npm:@blockchain-lab-um/masca`
         version: MascaConfig.snapVersion, // Defaults to the latest released version
-        supportedMethods: ['did:ethr', 'did:pkh'], // Defaults to all available methods
+        supportedMethods: ['did:ethr'], // Defaults to all available methods
     });
 
     console.log("connect result" + enableResult);
@@ -99,7 +99,7 @@ async function _callWrapper<Data>(promise: Promise<Result<Data>> | undefined, pa
     if (isError(res)) {
         console.error(res.error)
         if (param.errorMsg) {
-            toast.error(param.errorMsg)
+            toast.error(param.errorMsg + ' ' + res.error);
         } else {
             toast.error(`Error: ${res.error}`)
         }

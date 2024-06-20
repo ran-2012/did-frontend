@@ -1,9 +1,9 @@
-import {Button, Card, Descriptions, Flex, List, Tabs, TabsProps, Tooltip} from "antd";
-import {useEffect, useState} from "react";
-import {GetVcResponse} from "@did-demo/common";
+import {Button, Card, Descriptions, Flex, Tabs, TabsProps, Tooltip} from "antd";
+import {ReactNode, useEffect, useRef, useState} from "react";
+import {GetVcResponse, VcRequestStatus} from "@did-demo/common";
 import {DeleteOutlined, ReloadOutlined} from "@ant-design/icons";
-import {useAccount} from "wagmi";
 import {VerifiableCredential} from "@veramo/core";
+import {isSuccess} from "@blockchain-lab-um/masca-connector";
 import {useMyApi} from "../myapi/MyApiProvider.tsx";
 import toast from "../toast.ts";
 import {useMyCrypto} from "../crypto/CryptoProvider.tsx";
@@ -11,9 +11,10 @@ import {useMyModal} from "../modal/ModalProvider.tsx";
 import CreateVcRequestModal from "../modal/CreateVcRequestModal.tsx";
 import VcRequestList from "../component/VcRequestList.tsx";
 import VcDetailModal from "../modal/VcDetailModal.tsx";
+import JsonRawModal from "../modal/JsonRawModal.tsx";
+import {useMasca, useMascaCallWrapper} from "../masca/utility.ts";
 
 function MyRequest() {
-    const account = useAccount();
     const {crypto} = useMyCrypto();
     const createVcRequestModal = useMyModal(CreateVcRequestModal);
     const {api, isLogin, user} = useMyApi();
@@ -44,10 +45,9 @@ function MyRequest() {
         })
     }
 
-    function viewDetail(data: GetVcResponse) {
+    function getFullText(data: GetVcResponse) {
         if (!data.holderEncryptedVc && !data.signedVc) {
-            toast.error('No valid data found')
-            return;
+            return '';
         }
         let vcStr = '';
         try {
@@ -67,9 +67,17 @@ function MyRequest() {
         } catch (e) {
             const error = e as Error;
             toast.error('Failed to decrypt vc: ' + error.toString())
+            return '';
+        }
+        return vcStr;
+    }
+
+    function viewDetail(data: GetVcResponse) {
+        const vcStr = getFullText(data);
+        if (!vcStr) {
+            toast.error('No valid data found')
             return;
         }
-
         try {
             const vc = JSON.parse(vcStr) as VerifiableCredential
             showVcModalFunc?.show({
@@ -79,7 +87,6 @@ function MyRequest() {
             const error = e as Error;
             toast.error('Failed to parse vc: ' + error.toString())
         }
-
     }
 
     return (
@@ -119,9 +126,158 @@ function MyRequest() {
 }
 
 function ReceivedRequest() {
+    const {crypto} = useMyCrypto();
+    const {api, isLogin, user} = useMyApi();
+
+    const masca = useMasca();
+    const callWrapper = useMascaCallWrapper();
+
+    const [loading, setLoading] = useState<boolean>(false);
+    const [showAllData, setShowAllData] = useState<boolean>(false);
+    const [listData, setListData] = useState<GetVcResponse[]>([])
+    const [filteredData, setFilteredData] = useState<GetVcResponse[]>([]);
+
+    const showVcModalFunc = useMyModal(VcDetailModal);
+    const showFullTextFunc = useMyModal(JsonRawModal);
+
+    useEffect(() => {
+        loadData();
+    }, [isLogin]);
+
+    function loadData() {
+        if (!isLogin) {
+            toast.warn('Please login first')
+            return;
+        }
+        setLoading(true);
+        api.getReceivedRequestList(user).then((res) => {
+            setListData(res);
+            setFilteredData(res.filter((item) => {
+                return item.status == VcRequestStatus.PENDING;
+            }));
+
+            setLoading(false);
+            console.log(res)
+        }).catch((e) => {
+            setLoading(false);
+            toast.error(e.toString());
+        })
+    }
+
+    function getFullText(data: GetVcResponse) {
+        if (!data.vc) {
+            return '';
+        }
+        let vcStr = '';
+        try {
+            if (data.issuerPublicKey) {
+                vcStr = crypto.decrypt(data.vc)
+            } else {
+                vcStr = data.vc
+            }
+        } catch (e) {
+            const error = e as Error;
+            toast.error('Failed to decrypt vc: ' + error.toString())
+            return '';
+        }
+        return vcStr;
+    }
+
+    function encryptSignedVc(vc: VerifiableCredential) {
+        const vcStr = JSON.stringify(vc);
+        return crypto.encrypt(vcStr);
+    }
+
+    function viewDetail(data: GetVcResponse) {
+        const vcStr = getFullText(data);
+        if (!vcStr) {
+            toast.error('No valid data found')
+            return;
+        }
+        try {
+            const vc = JSON.parse(vcStr) as VerifiableCredential
+            showVcModalFunc?.show({
+                vc
+            })
+        } catch (e) {
+            const error = e as Error;
+            toast.error('Failed to parse vc: ' + error.toString())
+        }
+    }
+
+    function viewFullText(data: GetVcResponse) {
+        const vcStr = JSON.stringify(JSON.parse(getFullText(data)), null, 4);
+        showFullTextFunc?.show({json: vcStr});
+    }
+
+    function sign(data: GetVcResponse) {
+        setTimeout(async () => {
+            const vcStr = getFullText(data);
+
+            let vc: VerifiableCredential | null = null;
+            try {
+                vc = JSON.parse(vcStr) as VerifiableCredential
+            } catch (e) {
+                const error = e as Error;
+                toast.error('Failed to parse vc: ' + error.toString())
+                return;
+            }
+
+            // @ts-ignore
+            vc.issuer = undefined;
+            const result =
+                await callWrapper.call(masca.api?.createCredential, {
+                        infoMsg: 'Signing Verifiable Credential',
+                        successMsg: 'Verifiable Credential signed successfully',
+                        errorMsg: 'Failed to sign Verifiable Credential',
+                    },
+                    {
+                        minimalUnsignedCredential: vc,
+                        proofFormat: 'EthereumEip712Signature2021',
+                        options: {
+                            save: false,
+                        }
+                    });
+
+            if (!isSuccess(result)) {
+                return;
+            }
+
+            try {
+                const vc = result.data;
+                const encryptedVc = encryptSignedVc(vc);
+                await api.uploadSignedVc(data.id, encryptedVc)
+
+                loadData()
+            } catch (e) {
+                const error = e as Error;
+                console.error(e);
+                toast.error('Failed to encrypt/upload vc: ' + error.toString())
+            }
+        })
+    }
+
     return (
-        <>
-        </>
+        <Flex className='d-flex flex-column p-2'>
+            <Flex className={'w-100 mb-2'}>
+                <Button style={{}} type={'primary'} onClick={() => {
+                    setShowAllData(!showAllData);
+                }}>
+                    {showAllData ? 'Show All Data' : 'Show Pending Data'}
+                </Button>
+                <Button className={'ms-2'} type={'default'} onClick={loadData}><ReloadOutlined/></Button>
+            </Flex>
+            <VcRequestList
+                dataList={showAllData ? listData : filteredData}
+                isLoading={loading}
+                renderActionList={(data: GetVcResponse) => {
+                    return [
+                        <a onClick={() => viewDetail(data)} style={{color: '#3e77f8'}}>Detail</a>,
+                        <a onClick={() => viewFullText(data)} style={{color: '#3e77f8'}}>Full Text</a>,
+                        <a onClick={() => sign(data)} style={{color: '#2aa917'}}>Sign</a>,
+                    ];
+                }}/>
+        </Flex>
     )
 }
 
@@ -168,18 +324,23 @@ function MyKey() {
     return (
         <Flex className='d-flex flex-column w-100 m-2'>
             <Flex className={'w-100'}>
-                <Button type={'primary'} onClick={() => {
-                    setEnableCreateButton(false);
-                    setTimeout(async () => {
-                        try {
-                            await createAndUploadKey()
-                        } catch (e) {
-                            const error = e as Error;
-                            toast.error(error.message)
-                        }
-                        setEnableCreateButton(true);
-                    })
-                }} loading={!enableCreateButton}>Create and Upload Public Key</Button>
+                <Button
+                    type={'primary'}
+                    loading={!enableCreateButton}
+                    onClick={() => {
+                        setEnableCreateButton(false);
+                        setTimeout(async () => {
+                            try {
+                                await createAndUploadKey()
+                            } catch (e) {
+                                const error = e as Error;
+                                toast.error(error.message)
+                            }
+                            setEnableCreateButton(true);
+                        })
+                    }}>
+                    Create and Upload Public Key
+                </Button>
                 <Button type={'default'} className={'ms-2'} disabled={true}>Recover your Key</Button>
             </Flex>
             <Card title={'Your Public Key Hash'} className={'mt-2'}>
@@ -189,28 +350,46 @@ function MyKey() {
                     </Descriptions.Item>
                 </Descriptions>
             </Card>
-
         </Flex>
     )
 }
 
 export function VcRequest() {
+    const realTabs = useRef([
+        <MyRequest/>,
+        <ReceivedRequest/>,
+        <MyKey/>
+    ])
+    // Load only selected tab
+    const [displayTabs, setDisplayTabs] = useState(
+        [realTabs.current[0], <></>, <></>]);
 
-    const items: TabsProps['items'] = [{
-        key: '1',
-        label: 'My Requests',
-        children: <MyRequest/>
-    }, {
-        key: '2',
-        label: 'Received Requests',
-        children: <ReceivedRequest/>
-    }, {
-        key: '3',
-        label: 'Public Key',
-        children: <MyKey/>
-    }];
     return (
-        <Tabs items={items} className={'w-100 ms-2 me-2'} centered={true}>
+        <Tabs
+            items={[{
+                key: '1',
+                label: 'My Requests',
+                children: displayTabs[0],
+            }, {
+                key: '2',
+                label: 'Received Requests',
+                children: displayTabs[1]
+            }, {
+                key: '3',
+                label: 'Public Key',
+                children: displayTabs[2]
+            }]}
+            onChange={(key) => {
+                if (key == '1') {
+                    setDisplayTabs([realTabs.current[0], <></>, <></>]);
+                } else if (key == '2') {
+                    setDisplayTabs([<></>, realTabs.current[1], <></>]);
+                } else if (key == '3') {
+                    setDisplayTabs([<></>, <></>, realTabs.current[2]]);
+                }
+            }}
+            className={'w-100 ms-2 me-2'}
+            centered={true}>
 
         </Tabs>
     )
