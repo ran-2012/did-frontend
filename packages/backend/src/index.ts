@@ -60,12 +60,14 @@ async function main() {
     await startServer();
 }
 
-process.on('SIGKILL', async () => {
-    await mongoose.disconnect();
-});
+// process.on('SIGKILL', async () => {
+//     await mongoose.disconnect();
+// });
 
 main().then(() => {
     log.d('Started');
+}).catch((e)=>{
+    log.e(e);
 });
 
 export {
