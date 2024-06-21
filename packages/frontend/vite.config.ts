@@ -30,6 +30,9 @@ export default defineConfig(({command, mode}) => {
                 usePolling: true
             }
         },
+        preview:{
+            port: Number.parseInt(process.env.PAGE_PORT) ?? 3080,
+        },
         build: {
             sourcemap: 'inline'
         },

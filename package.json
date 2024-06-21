@@ -10,6 +10,8 @@
         "build-dep": "npm run build -w packages/common",
         "dev": "pnpm --filter ./packages/common run build && cp .env packages/backend/ && concurrently \"pnpm --filter ./packages/frontend run dev\" \"pnpm --filter ./packages/backend run dev\"",
         "dev-backend": "npm run dev -w packages/backend",
+        "build": "pnpm --filter ./packages/common run build && pnpm --filter ./packages/frontend run build",
+        "serve": "cp .env packages/backend/ && concurrently \"pnpm --filter ./packages/frontend run preview\" \"pnpm --filter ./packages/backend run dev\"",
         "lint": "eslint . --ext .ts,.tsx --fix"
     },
     "dependencies": {
