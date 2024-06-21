@@ -30,7 +30,7 @@ export class VcRequestData implements GetVcResponse {
     @prop()
     holderEncryptedVc = '';
 
-    constructor(holder: string, issuer: string, issuerPublicKey = '', publicKey = '', signedVc = '', vc = '', holderEncryptedVc: string, status: VcRequestStatus = VcRequestStatus.PENDING) {
+    constructor(holder: string, issuer: string, issuerPublicKey = '', publicKey = '', signedVc = '', vc = '', holderEncryptedVc = '', status: VcRequestStatus = VcRequestStatus.PENDING) {
         this.holder = holder;
         this.issuer = issuer;
         this.issuerPublicKey = issuerPublicKey;

@@ -1,6 +1,5 @@
 import 'dotenv/config';
 import express, {ErrorRequestHandler} from 'express';
-import {PublicKey} from '@did-demo/common';
 import cors from 'cors';
 import mongoose from 'mongoose';
 import {siweRouter} from './siwe';
@@ -35,7 +34,6 @@ app.use(cors({
     // origin: ['http://localhost:3080'],
     // allowedHeaders: ['Content-Type']
 }));
-
 
 app.use('/', siweRouter);
 app.use('/', vcRouter);
