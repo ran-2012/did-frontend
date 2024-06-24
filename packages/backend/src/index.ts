@@ -41,6 +41,11 @@ app.use('/', pkRouter);
 
 app.use(errorHandler);
 
+app.use((req, res) => {
+    res.status(404).send({error: `Path: ${req.path} not found`});
+});
+
+
 async function startServer() {
     await new Promise<void>((resolve) => {
         app.listen(config.port, () => {
@@ -66,7 +71,7 @@ async function main() {
 
 main().then(() => {
     log.d('Started');
-}).catch((e)=>{
+}).catch((e) => {
     log.e(e);
 });
 
