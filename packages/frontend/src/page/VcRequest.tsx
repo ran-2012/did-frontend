@@ -280,6 +280,8 @@ function ReceivedRequest() {
                     return [
                         <a onClick={() => viewDetail(data)} style={{color: '#3e77f8'}}>Detail</a>,
                         <a onClick={() => viewFullText(data)} style={{color: '#3e77f8'}}>Full Text</a>,
+                        <a onClick={()=>{}} style={{color: '#d95858'}}>Reject</a>,
+                        <a onClick={()=>{}} style={{color: '#dabe65'}}>Revoke</a>,
                         <a onClick={() => sign(data)} style={{color: '#2aa917'}}>Sign</a>,
                     ];
                 }}/>

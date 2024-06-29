@@ -101,6 +101,7 @@ export class Api {
         });
 
         checkResponse(res);
+        return new GetVcResponse((await res.json()).data);
     }
 
     async deleteRequest(id: string) {

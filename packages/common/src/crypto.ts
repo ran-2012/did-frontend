@@ -27,12 +27,10 @@ function encryptMessage(message: string, publicKey: pki.rsa.PublicKey) {
         throw new Error("Failed to encrypt message")
     }
 
-    console.log("key: " + util.encode64(key));
     const encrypted = util.encode64(c.output.getBytes());
     const encryptedKey = util.encode64(publicKey.encrypt(key, 'RSAES-PKCS1-V1_5'));
     const encryptedIv = util.encode64(publicKey.encrypt(iv, 'RSAES-PKCS1-V1_5'));
 
-    console.log("encrypted: " + encrypted);
     const result = {
         encryptedMessage: encrypted,
         encryptedKey: encryptedKey,
@@ -44,7 +42,6 @@ function encryptMessage(message: string, publicKey: pki.rsa.PublicKey) {
 
 function decryptMessage(encrypted: string, privateKey: pki.rsa.PrivateKey) {
     const json = JSON.parse(lz.decompressFromBase64(encrypted));
-    console.log(json);
 
     const {encryptedMessage, encryptedKey, encryptedIv} = json;
     const key = privateKey.decrypt(util.decode64(encryptedKey), 'RSAES-PKCS1-V1_5');

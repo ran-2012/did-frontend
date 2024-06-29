@@ -40,8 +40,8 @@ function NavigationBar() {
             item('My Presentations', 'vp-list', '/vp-list')
         ]));
         res.push(item('Credential Request', 'vc-request', '/vc-request'));
-        res.push(item('Mine', 'mine', '/mine'));
-        res.push(item('Test', 'test', '/test'));
+        // res.push(item('Mine', 'mine', '/mine'));
+        // res.push(item('Test', 'test', '/test'));
 
         return res;
     }

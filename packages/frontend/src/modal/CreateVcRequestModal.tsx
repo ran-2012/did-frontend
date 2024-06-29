@@ -131,7 +131,7 @@ function CreateVcRequestModal(param: Param) {
             }
 
             try {
-                await api.createRequest({
+                const requestBody = {
                     issuer,
                     holder: account.address!,
                     publicKey: crypto.exportPk() ?? '',
@@ -139,7 +139,10 @@ function CreateVcRequestModal(param: Param) {
                     vc: vcStr,
                     signedVc: '',
                     holderEncryptedVc
-                })
+                }
+                console.log(requestBody)
+                const response = await api.createRequest(requestBody)
+                console.log(response);
             } catch (e) {
                 const error = e as Error;
                 toast.error(error.message);
