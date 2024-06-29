@@ -16,9 +16,16 @@ export function createSiweMessage(address: Address, chainId: number, nonce: stri
     })
 }
 
-function checkResponse(res: Response) {
+async function checkResponse(res: Response) {
     if (res.status == 401 || res.status == 403 || res.status == 400) {
-        throw new Error(`Response not ok: ${res.status}`);
+        const message = (await res.json()).error as string | undefined;
+        if (message) {
+            console.error(message);
+            throw new Error((await res.json()).error);
+        } else {
+            console.error(res.statusText);
+            throw new Error(res.statusText);
+        }
     }
 }
 
@@ -40,7 +47,7 @@ export class Api {
             method: 'GET'
         })
         console.log(res);
-        checkResponse(res);
+        await checkResponse(res);
         return (await res.json()).nonce;
     }
 
@@ -56,7 +63,7 @@ export class Api {
             })
         })
         console.log(res);
-        checkResponse(res);
+        await checkResponse(res);
         return (await res.json()).isValid;
     }
 
@@ -75,7 +82,7 @@ export class Api {
             }
         });
 
-        checkResponse(res);
+        await checkResponse(res);
         return this.convertVcResponse((await res.json()).data);
     }
 
@@ -86,7 +93,7 @@ export class Api {
             }
         });
 
-        checkResponse(res);
+        await checkResponse(res);
         return this.convertVcResponse((await res.json()).data);
     }
 
@@ -96,7 +103,7 @@ export class Api {
                 ...this.tokenHeader(),
             }
         });
-        checkResponse(res);
+        await checkResponse(res);
         return (await res.json()).data as string;
     }
 
@@ -110,7 +117,7 @@ export class Api {
             body: JSON.stringify(vc)
         });
 
-        checkResponse(res);
+        await checkResponse(res);
         return new GetVcResponse((await res.json()).data);
     }
 
@@ -121,7 +128,7 @@ export class Api {
                 ...this.tokenHeader(),
             }
         });
-        checkResponse(res);
+        await checkResponse(res);
     }
 
     async rejectRequest(id: string) {
@@ -131,7 +138,7 @@ export class Api {
                 ...this.tokenHeader(),
             }
         });
-        checkResponse(res);
+        await checkResponse(res);
     }
 
     async revokeCredential(id: string) {
@@ -141,7 +148,7 @@ export class Api {
                 ...this.tokenHeader(),
             }
         });
-        checkResponse(res);
+        await checkResponse(res);
     }
 
     async uploadSignedVc(id: string, signedVc: string) {
@@ -153,7 +160,7 @@ export class Api {
             },
             body: JSON.stringify({signedVc})
         });
-        checkResponse(res);
+        await checkResponse(res);
     }
 
     async uploadPk(user: string, pk: string) {
@@ -165,7 +172,7 @@ export class Api {
             },
             body: JSON.stringify({pk, test: '12312312'})
         });
-        checkResponse(res);
+        await checkResponse(res);
     }
 
     async getPk(user: string): Promise<string | null> {
@@ -174,7 +181,7 @@ export class Api {
                 ...this.tokenHeader(),
             },
         });
-        checkResponse(res);
+        await checkResponse(res);
         return (await res.json()).data;
     }
 

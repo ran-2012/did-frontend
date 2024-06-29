@@ -23,7 +23,12 @@ const getVcData: Handler = async (req, res, next) => {
 
 const vcDb = new VcDb();
 
-vcRouter.get('/vc/id', async (req, res) => {
+function isEqualId(id1: string | undefined | null, id2: string | undefined | null): boolean {
+    if (!id1 && !id2) return false;
+    return id1?.toLowerCase() == id2?.toLowerCase();
+}
+
+vcRouter.get('/vc/id', async (_, res) => {
     // return newly generated valid object id
 
     const id = new ObjectId();
@@ -60,7 +65,7 @@ vcRouter.post('/vc', async (req, res) => {
 });
 
 vcRouter.get('/vc/holder/:holder', async (req, res) => {
-    if (req.user?.toLowerCase() != req.params.holder.toLowerCase()) {
+    if (!isEqualId(req.user, req.params.holder)) {
         res.status(403).send({error: 'Unauthorized, invalid holder'});
         return;
     }
@@ -70,7 +75,7 @@ vcRouter.get('/vc/holder/:holder', async (req, res) => {
 });
 
 vcRouter.get('/vc/issuer/:issuer', async (req, res) => {
-    if (req.user != req.params.issuer) {
+    if (!isEqualId(req.user, req.params.issuer)) {
         res.status(403).send({error: 'Unauthorized, invalid issuer'});
         return;
     }
@@ -80,7 +85,7 @@ vcRouter.get('/vc/issuer/:issuer', async (req, res) => {
 });
 
 vcRouter.delete('/vc/:id', getVcData, async (req, res) => {
-    if (req.vcData!.holder.toLowerCase() != req.user?.toLowerCase()) {
+    if (!isEqualId(req.vcData!.holder, req.user)) {
         res.status(403).send({error: 'Unauthorized, only holder can delete VC'});
         return;
     }
@@ -111,16 +116,21 @@ vcRouter.put('/vc/:id/', getVcData, async (req, res) => {
 });
 
 vcRouter.post('/vc/:id/reject', getVcData, async (req, res) => {
-    if (req.vcData!.issuer != req.user) {
+    log.info('user: ', req.user);
+    log.info('issuer: ', req.vcData!.issuer);
+
+    if (!isEqualId(req.vcData!.issuer, req.user!)) {
         res.status(403).send({error: 'Unauthorized, only issuer can reject VC'});
+        return;
     }
     await vcDb.update(req.params.id, {status: VcRequestStatus.REJECTED});
     res.status(200).send();
 });
 
 vcRouter.post('/vc/:id/revoke', getVcData, async (req, res) => {
-    if (req.vcData!.issuer != req.user) {
+    if (!isEqualId(req.vcData!.issuer, req.user!)) {
         res.status(403).send({error: 'Unauthorized, only issuer can revoke VC'});
+        return;
     }
     await vcDb.update(req.params.id, {isRevoked: true});
 });

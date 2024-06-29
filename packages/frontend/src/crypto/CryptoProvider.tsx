@@ -22,11 +22,14 @@ export type MyCrypto = typeof Crypto;
 export const CryptoContext = createContext<MyCrypto>(Crypto)
 
 export function CryptoProvider(param: Param) {
-    const {isLogin} = useMyApi();
+    const account = useAccount();
     const [hasKey, setHasKey] = useState(_Crypto.hasKeyPair());
     const [pkHash, setPkHash] = useState<string>('');
 
     useEffect(() => {
+        if (!account.isConnected || !account.address) {
+            return;
+        }
         const hasKey = _Crypto.hasKeyPair()
         console.log('hasKey: ' + hasKey)
         setHasKey(hasKey);
@@ -35,7 +38,7 @@ export function CryptoProvider(param: Param) {
         } else {
             setPkHash('');
         }
-    }, [isLogin]);
+    }, [account.address, account.isConnected]);
 
     return (
         <CryptoContext.Provider value={{
