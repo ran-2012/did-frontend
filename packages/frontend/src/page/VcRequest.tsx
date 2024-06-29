@@ -1,5 +1,5 @@
-import {Button, Card, Descriptions, Flex, Tabs, TabsProps, Tooltip} from "antd";
-import {ReactNode, useEffect, useRef, useState} from "react";
+import {Button, Card, Descriptions, Flex, Tabs, Tooltip} from "antd";
+import {useEffect, useRef, useState} from "react";
 import {GetVcResponse, VcRequestStatus} from "@did-demo/common";
 import {DeleteOutlined, ReloadOutlined} from "@ant-design/icons";
 import {VerifiableCredential} from "@veramo/core";
@@ -263,6 +263,32 @@ function ReceivedRequest() {
         })
     }
 
+    function reject(id: string) {
+        toast.info('Rejecting request')
+        setTimeout(async () => {
+            try {
+                await api.rejectRequest(id)
+                toast.success('Request rejected')
+            } catch (e) {
+                const error = e as Error;
+                toast.error('Failed to reject request: ' + error.message);
+            }
+        })
+    }
+
+    function revoke(id: string) {
+        toast.info('Revoking credential')
+        setTimeout(async () => {
+            try {
+                await api.revokeCredential(id)
+                toast.success('Credential revoked')
+            } catch (e) {
+                const error = e as Error;
+                toast.error('Failed to revoke credential: ' + error.message);
+            }
+        })
+    }
+
     return (
         <Flex className='d-flex flex-column p-2'>
             <Flex className={'w-100 mb-2'}>
@@ -280,8 +306,8 @@ function ReceivedRequest() {
                     return [
                         <a onClick={() => viewDetail(data)} style={{color: '#3e77f8'}}>Detail</a>,
                         <a onClick={() => viewFullText(data)} style={{color: '#3e77f8'}}>Full Text</a>,
-                        <a onClick={()=>{}} style={{color: '#d95858'}}>Reject</a>,
-                        <a onClick={()=>{}} style={{color: '#dabe65'}}>Revoke</a>,
+                        <a onClick={() => reject(data.id)} style={{color: '#d95858'}}>Reject</a>,
+                        <a onClick={() => revoke(data.id)} style={{color: '#dabe65'}}>Revoke</a>,
                         <a onClick={() => sign(data)} style={{color: '#2aa917'}}>Sign</a>,
                     ];
                 }}/>

@@ -134,6 +134,16 @@ export class Api {
         checkResponse(res);
     }
 
+    async revokeCredential(id: string) {
+        const res = await fetch(API_HOST + '/vc/' + id + '/revoke', {
+            method: 'POST',
+            headers: {
+                ...this.tokenHeader(),
+            }
+        });
+        checkResponse(res);
+    }
+
     async uploadSignedVc(id: string, signedVc: string) {
         const res = await fetch(API_HOST + '/vc/' + id, {
             method: 'PUT',
