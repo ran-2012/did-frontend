@@ -83,6 +83,7 @@ export function createVerifiableCredential(vc: Partial<UnsignedCredential> & {
     }, vc);
 }
 
+
 const VcUtility = {
     getIssuer: (vc: VerifiableCredential, format: boolean = false) => {
         if (typeof vc.issuer == 'string') {

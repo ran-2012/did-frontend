@@ -90,6 +90,16 @@ export class Api {
         return this.convertVcResponse((await res.json()).data);
     }
 
+    async generateCredentialId() {
+        const res = await fetch(API_HOST + '/vc/id', {
+            headers: {
+                ...this.tokenHeader(),
+            }
+        });
+        checkResponse(res);
+        return (await res.json()).data as string;
+    }
+
     async createRequest(vc: VcRequest) {
         const res = await fetch(API_HOST + '/vc', {
             method: 'POST',
@@ -156,6 +166,10 @@ export class Api {
         });
         checkResponse(res);
         return (await res.json()).data;
+    }
+
+    getIdForCredential(requestId: string) {
+        return `${API_HOST}/vc/${requestId}`;
     }
 
     constructor(token: string = '') {

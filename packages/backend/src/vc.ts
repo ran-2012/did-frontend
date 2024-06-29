@@ -1,5 +1,6 @@
 import {Handler, Router} from 'express';
 import {VcRequest, VcRequestStatus} from '@did-demo/common';
+import {ObjectId} from 'mongodb';
 import {checkSiwe} from './siwe';
 import {VcDb} from './db/vc';
 import {getLogger} from './log';
@@ -22,14 +23,27 @@ const getVcData: Handler = async (req, res, next) => {
 
 const vcDb = new VcDb();
 
+vcRouter.get('/vc/id', async (req, res) => {
+    // return newly generated valid object id
+
+    const id = new ObjectId();
+    res.status(200).send({data: id});
+});
+
 vcRouter.post('/vc', async (req, res) => {
-    const {holder, issuer, issuerPublicKey, publicKey, signedVc, vc, holderEncryptedVc} = req.body as VcRequest;
+    const {id, holder, issuer, issuerPublicKey, publicKey, signedVc, vc, holderEncryptedVc} = req.body as VcRequest;
     if (!holder || !issuer) {
         res.status(400).send({error: 'Missing required fields'});
         return;
     }
 
+    if (!ObjectId.isValid(id)) {
+        res.status(400).send({error: 'Invalid id'});
+    }
+
+    const oId = ObjectId.createFromHexString(id);
     const data = await vcDb.create({
+        _id: oId,
         holder: holder.toLowerCase(),
         issuer: issuer.toLowerCase(),
         issuerPublicKey,
@@ -37,7 +51,8 @@ vcRouter.post('/vc', async (req, res) => {
         signedVc,
         vc,
         holderEncryptedVc,
-        status: VcRequestStatus.PENDING
+        status: VcRequestStatus.PENDING,
+        isRevoked: false
     });
     //log
     log.i('Data created');
@@ -101,6 +116,13 @@ vcRouter.post('/vc/:id/reject', getVcData, async (req, res) => {
     }
     await vcDb.update(req.params.id, {status: VcRequestStatus.REJECTED});
     res.status(200).send();
+});
+
+vcRouter.post('/vc/:id/revoke', getVcData, async (req, res) => {
+    if (req.vcData!.issuer != req.user) {
+        res.status(403).send({error: 'Unauthorized, only issuer can revoke VC'});
+    }
+    await vcDb.update(req.params.id, {isRevoked: true});
 });
 
 export {

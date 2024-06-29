@@ -92,21 +92,35 @@ function CreateVcRequestModal(param: Param) {
             subject[item.key] = item.value;
         })
 
-        const vc = createVerifiableCredential({
-            issuer: getDid(issuer),
-            issuanceDate,
-            type: values.type.split(','),
-            credentialSubject: subject
-        })
-        let vcStr = JSON.stringify(vc);
-        let holderEncryptedVc = vcStr;
 
         setTimeout(async () => {
+            const vc = createVerifiableCredential({
+                issuer: getDid(issuer),
+                issuanceDate,
+                type: values.type.split(','),
+                credentialSubject: subject
+            })
+            let vcStr = JSON.stringify(vc);
+            let holderEncryptedVc = vcStr;
+
             console.log(vcStr);
+
             if (!isLogin) {
                 toast.error("Please login first");
                 return;
             }
+            let id = '';
+            try {
+                id = await api.generateCredentialId();
+            } catch (e) {
+                console.log(e);
+                toast.error("Failed to generate credential id");
+                return;
+            }
+
+            // http://localhost:3000/vc/66801f025b6635f7a79842e9
+            vc.id = api.getIdForCredential(id);
+
             const issuerPk = await api.getPk(issuer);
             if (!issuerPk) {
                 toast.warn("Key not found, sending plain text");
@@ -130,15 +144,17 @@ function CreateVcRequestModal(param: Param) {
                 }
             }
 
+
             try {
                 const requestBody = {
+                    id,
                     issuer,
                     holder: account.address!,
                     publicKey: crypto.exportPk() ?? '',
                     issuerPublicKey: issuerPk ?? '',
                     vc: vcStr,
                     signedVc: '',
-                    holderEncryptedVc
+                    holderEncryptedVc,
                 }
                 console.log(requestBody)
                 const response = await api.createRequest(requestBody)

@@ -1,4 +1,4 @@
-import {GetVcResponse, VcRequest, VcRequestStatus, WithStatus} from '@did-demo/common';
+import {GetVcResponse, VcRequestStatus} from '@did-demo/common';
 import {getModelForClass, index, modelOptions, prop, Severity} from '@typegoose/typegoose';
 import mongoose from 'mongoose';
 
@@ -9,7 +9,6 @@ export class VcRequestData implements GetVcResponse {
     _id!: mongoose.Types.ObjectId;
 
     get id() {
-        console.log('id: ' + this._id.toString());
         return this._id.toString();
     }
 
@@ -29,8 +28,10 @@ export class VcRequestData implements GetVcResponse {
     status = VcRequestStatus.PENDING;
     @prop()
     holderEncryptedVc = '';
+    @prop()
+    isRevoked = false;
 
-    constructor(holder: string, issuer: string, issuerPublicKey = '', publicKey = '', signedVc = '', vc = '', holderEncryptedVc = '', status: VcRequestStatus = VcRequestStatus.PENDING) {
+    constructor(holder: string, issuer: string, issuerPublicKey = '', publicKey = '', signedVc = '', vc = '', holderEncryptedVc = '', status: VcRequestStatus = VcRequestStatus.PENDING, isRevoked = false) {
         this.holder = holder;
         this.issuer = issuer;
         this.issuerPublicKey = issuerPublicKey;
@@ -39,6 +40,7 @@ export class VcRequestData implements GetVcResponse {
         this.vc = vc;
         this.holderEncryptedVc = holderEncryptedVc;
         this.status = status;
+        this.isRevoked = isRevoked;
     }
 }
 
@@ -69,7 +71,7 @@ export class VcDb {
         }
     }
 
-    async create(data: VcRequest & WithStatus): Promise<VcRequestData> {
+    async create(data: Omit<VcRequestData, 'id'>): Promise<VcRequestData> {
         const vc = await VcModel.create(data);
         await vc.save();
         return vc;

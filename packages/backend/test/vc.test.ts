@@ -1,5 +1,6 @@
 import assert from 'node:assert';
 import supertest, {Agent} from 'supertest';
+import mongoose from 'mongoose';
 import {app, initDb} from '../src';
 import {VcDb, VcRequestData} from '../src/db/vc';
 
@@ -77,6 +78,14 @@ describe('VC API test', () => {
         assert.equal(res.status, 200);
         const list = await vcDb.getByHolder(user1);
         assert.equal(list.length, 0);
+    });
+
+    it('create with id', async () => {
+        const data = new VcRequestData(user1, user2);
+        const id = new mongoose.Types.ObjectId();
+        console.log('id: ' + id);
+        data._id = id;
+        await vcDb.create(data);
     });
 
     afterAll(async () => {

@@ -1,6 +1,6 @@
-import {WithId} from "./utility";
 
 export interface VcRequest {
+    id: string,
     holder: string,
     issuer: string,
     /**
@@ -42,6 +42,7 @@ export class GetVcResponse implements VcRequest {
     vc: string = '';
     holderEncryptedVc: string = '';
     status: VcRequestStatus = VcRequestStatus.PENDING;
+    isRevoked = false;
 
     constructor(source: GetVcResponse) {
         this._id = source._id;
@@ -54,6 +55,7 @@ export class GetVcResponse implements VcRequest {
         this.vc = source.vc;
         this.holderEncryptedVc = source.holderEncryptedVc;
         this.status = source.status;
+        this.isRevoked = source.isRevoked;
     }
 }
 
