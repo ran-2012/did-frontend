@@ -11,8 +11,8 @@ function PageTemplate() {
     const content = useLoaderData() as ReactNode;
     return (
         <Web3Provider>
-            <CryptoProvider>
-                <MyApiProvider>
+            <MyApiProvider>
+                <CryptoProvider>
                     <ModalProvider>
                         <Layout className={'vh-100'}>
                             <Layout.Header className='d-flex flex-col'>
@@ -43,8 +43,8 @@ function PageTemplate() {
                             </Layout.Footer>
                         </Layout>
                     </ModalProvider>
-                </MyApiProvider>
-            </CryptoProvider>
+                </CryptoProvider>
+            </MyApiProvider>
         </Web3Provider>
     );
 }

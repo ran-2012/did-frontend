@@ -1,6 +1,6 @@
 import {useRef, useState} from "react";
 import {Button, Checkbox, Flex, GetProp, List, Tooltip} from "antd";
-import {isSuccess} from "@blockchain-lab-um/masca-connector";
+import {AvailableCredentialStores, isSuccess} from "@blockchain-lab-um/masca-connector";
 import {VerifiableCredential, VerifiablePresentation} from "@veramo/core";
 import {QrcodeOutlined} from "@ant-design/icons";
 import VcDetailModal from "../modal/VcDetailModal.tsx";
@@ -70,6 +70,7 @@ function VcList(param: Param) {
             errorMsg: 'Failed to load Credential'
         },)
         if (isSuccess(res)) {
+            console.log(res.data);
             setVcList(res.data)
             return true;
         } else {
@@ -83,7 +84,7 @@ function VcList(param: Param) {
             successMsg: 'Credential deleted',
             errorMsg: 'Failed to delete Credential',
             isLoading: setIsLoading,
-        }, displayVc.current.metadata.id))
+        }, displayVc.current.metadata.id, {store: displayVc.current.metadata.store as AvailableCredentialStores[]}))
     }
 
     function updateCurrentVc(vc: VC | null = null) {

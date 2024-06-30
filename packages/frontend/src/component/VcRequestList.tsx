@@ -32,6 +32,13 @@ function VcRequestList(param: Param) {
         }
     }
 
+    function getRevokeStatue(data: GetVcResponse) {
+        if (data.isRevoked) {
+            return (<Tag color={'red'}>Revoked</Tag>)
+        }
+        return (<></>);
+    }
+
     return (
         <List
             bordered
@@ -61,6 +68,7 @@ function VcRequestList(param: Param) {
                                 </div>
                             </Space>
                             {getStatusTag(data)}
+                            {getRevokeStatue(data)}
                             <Tooltip title={crypto.sha256(data.vc)}><Tag>Hash</Tag></Tooltip>
                         </Space>
                     </List.Item>
