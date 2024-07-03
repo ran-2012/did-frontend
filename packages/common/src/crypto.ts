@@ -1,4 +1,4 @@
-import {cipher, jsbn, md, pki, random, util} from 'node-forge';
+import {cipher, jsbn, md, mgf, pki, pss, random, util} from 'node-forge';
 import * as lz from 'lz-string';
 
 /**
@@ -30,14 +30,38 @@ function encryptMessage(message: string, publicKey: pki.rsa.PublicKey) {
     const encrypted = util.encode64(c.output.getBytes());
     const encryptedKey = util.encode64(publicKey.encrypt(key, 'RSAES-PKCS1-V1_5'));
     const encryptedIv = util.encode64(publicKey.encrypt(iv, 'RSAES-PKCS1-V1_5'));
+    // const siengedKey = util.encode64(private)
 
     const result = {
         encryptedMessage: encrypted,
         encryptedKey: encryptedKey,
         encryptedIv: encryptedIv
+        // signedKey:
     }
 
     return lz.compressToBase64(JSON.stringify(result));
+}
+
+function signMessage(message: string, privateKey: pki.rsa.PrivateKey) {
+    const m = md.sha1.create();
+    m.update(message, 'utf8');
+    const p = pss.create({
+        md: md.sha1.create(),
+        mgf: mgf.mgf1.create(md.sha1.create()),
+        saltLength: 20
+    });
+    return util.encode64(privateKey.sign(m, p));
+}
+
+function verifyMessage(message: string, signature: string, publicKey: pki.rsa.PublicKey) {
+    const p = pss.create({
+        md: md.sha1.create(),
+        mgf: mgf.mgf1.create(md.sha1.create()),
+        saltLength: 20
+    });
+    const m = md.sha1.create();
+    m.update(message, 'utf8');
+    return publicKey.verify(m.digest().getBytes(), signature, p);
 }
 
 function decryptMessage(encrypted: string, privateKey: pki.rsa.PrivateKey) {
@@ -113,6 +137,8 @@ export {
     createKeyPair,
     encryptMessage,
     decryptMessage,
+    signMessage,
+    verifyMessage,
     exportPublicKey,
     exportPrivateKey,
     importPublicKey,
