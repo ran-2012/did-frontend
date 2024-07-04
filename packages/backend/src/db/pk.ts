@@ -10,9 +10,13 @@ export class PkData {
     @prop()
     pk = '';
 
-    constructor(user: string, pk: string) {
+    @prop()
+    vc = '';
+
+    constructor(user: string, pk: string, vc: string) {
         this.user = user;
         this.pk = pk;
+        this.vc = vc ?? '';
     }
 }
 
@@ -32,16 +36,16 @@ export class PkDb {
         await pkData.save();
     }
 
-    async get(user: string): Promise<string | null> {
+    async get(user: string): Promise<{ pk: string, vc: string } | null> {
         const res = await PkModel.findOne({user}).exec();
         if (res) {
-            return res.pk;
+            return {pk: res.pk, vc: res.vc};
         } else {
             return null;
         }
     }
 
-    async update(user: string, pk: string) {
-        await PkModel.findOneAndUpdate({user: user}, {pk});
+    async update(user: string, pk: string, vc: string) {
+        await PkModel.findOneAndUpdate({user: user}, {pk, vc});
     }
 }

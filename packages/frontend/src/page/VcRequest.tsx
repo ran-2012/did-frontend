@@ -13,6 +13,7 @@ import VcRequestList from "../component/VcRequestList.tsx";
 import VcDetailModal from "../modal/VcDetailModal.tsx";
 import JsonRawModal from "../modal/JsonRawModal.tsx";
 import {useMasca, useMascaCallWrapper} from "../masca/utility.ts";
+import {generatePkVc} from "../veramo/utility.ts";
 
 function MyRequest() {
     const {crypto} = useMyCrypto();
@@ -316,6 +317,9 @@ function ReceivedRequest() {
 }
 
 function MyKey() {
+    const masca = useMasca();
+    const callWrapper = useMascaCallWrapper();
+
     const {isLogin, api, user} = useMyApi();
     const {createKeyPair, hasKey, pkHash, crypto} = useMyCrypto();
     const [enableCreateButton, setEnableCreateButton] = useState<boolean>(true);
@@ -331,6 +335,15 @@ function MyKey() {
             // })
         }
     }, [isLogin, hasKey]);
+
+    async function requestPkVc(user: string, pk: string) {
+        const vc = generatePkVc(user, pk);
+        return await callWrapper.call(masca.api?.createCredential, {
+            infoMsg: "Requesting signing",
+            successMsg: "Credential signed",
+            "errorMsg": "Failed to sign credential",
+        }, {minimalUnsignedCredential: vc, proofFormat: "EthereumEip712Signature2021"});
+    }
 
     async function createAndUploadKey() {
         if (!isLogin) {
@@ -352,7 +365,13 @@ function MyKey() {
             toast.error('Failed to create key pair')
             return
         }
-        await api.uploadPk(user, pk)
+        const pkVcResult = await requestPkVc(user, pk);
+        if (!pkVcResult.success) {
+            console.error("Failed to generate public key vc")
+            toast.error("Failed to generate public key vc")
+            return;
+        }
+        await api.uploadPk(user, pk, pkVcResult.data)
     }
 
     return (

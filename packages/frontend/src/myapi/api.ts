@@ -1,6 +1,7 @@
 import {createSiweMessage as _createSiweMessage} from "viem/siwe";
 import {Address} from "viem";
 import {GetVcResponse, VcRequest} from "@did-demo/common";
+import {VerifiableCredential} from "@veramo/core";
 
 const API_HOST = import.meta.env.VITE_API_HOST ?? 'http://localhost:3000';
 
@@ -163,14 +164,15 @@ export class Api {
         await checkResponse(res);
     }
 
-    async uploadPk(user: string, pk: string) {
+
+    async uploadPk(user: string, pk: string, vc: VerifiableCredential | null = null) {
         const res = await fetch(API_HOST + '/pk/user/' + user, {
             method: 'POST',
             headers: {
                 ...this.tokenHeader(),
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({pk, test: '12312312'})
+            body: JSON.stringify({pk, vc: vc ? JSON.stringify(vc) : undefined})
         });
         await checkResponse(res);
     }

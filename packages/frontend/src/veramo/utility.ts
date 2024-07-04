@@ -53,6 +53,27 @@ function createTestCredential(list: Array<{ key: string, value: string }>) {
     };
 }
 
+export function generatePkVc(user: string, pk: string): UnsignedCredential {
+    const issuer = getDid(user);
+    return {
+        issuer,
+        issuanceDate: new Date().toISOString(),
+        type: ['VerifiableCredential', 'PublicKeyCredential'],
+        credentialSubject: {
+            id: issuer,
+            publicKey: pk
+        },
+        credentialSchema: {
+            id: 'https://beta.api.schemas.serto.id/v1/public/program-completion-certificate/1.0/json-schema.json',
+            type: 'JsonSchemaValidator2018',
+        },
+        '@context': [
+            'https://www.w3.org/2018/credentials/v1',
+            'https://beta.api.schemas.serto.id/v1/public/program-completion-certificate/1.0/ld-context.json',
+        ],
+    };
+}
+
 function getDid(address: string, method: string = "ethr", chainId: string = "0xaa36a7") {
     return `did:${method}:${chainId}:${address}`
 }

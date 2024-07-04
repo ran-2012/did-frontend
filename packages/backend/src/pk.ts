@@ -22,7 +22,7 @@ pkRouter.get('/pk/user/:user', async (req, res) => {
 
 pkRouter.post('/pk/user/:user', async (req, res) => {
     const user = req.params.user.toLowerCase();
-    const {pk} = req.body as { pk: string };
+    const {pk, vc} = req.body as { pk: string, vc?: string };
     log.i('Create data', {user, pk});
     if (!user || !pk) {
         res.status(400).send({error: 'Missing required fields'});
@@ -35,9 +35,9 @@ pkRouter.post('/pk/user/:user', async (req, res) => {
 
     const data = await pkDb.get(user);
     if (data) {
-        await pkDb.update(user, pk);
+        await pkDb.update(user, pk, vc ?? '');
     } else {
-        await pkDb.create({user, pk});
+        await pkDb.create({user, pk, vc: vc ?? ''});
     }
     log.i('Data created');
     res.status(200).send();
