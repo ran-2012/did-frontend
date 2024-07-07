@@ -3,6 +3,7 @@ import {useAccount, useSignMessage} from "wagmi";
 import {SiweRequest} from "@did-demo/common";
 import {Simulate} from "react-dom/test-utils";
 import {LocalStorage} from "../utility/storage.ts";
+import {useMasca} from "../masca/utility.ts";
 import {Api, createSiweMessage} from "./api.ts";
 
 interface Param {
@@ -38,7 +39,7 @@ function saveToken(siweRequest: SiweRequest) {
 }
 
 function loadToken(user: string = ''): SiweRequest | null {
-    return LocalStorage.load(`${user}:siweRequest`) as SiweRequest;
+    return LocalStorage.load(`siweRequest`) as SiweRequest;
 }
 
 function removeToken() {
@@ -57,9 +58,18 @@ function MyApiProvider(param: Param) {
     const api = useRef(MyApiDefault.api);
 
     useEffect(() => {
-        console.log('Account changed: ' + account.address);
-        setUser(account.address ?? '')
-    }, [account.address]);
+        if (account.address && account.isConnected) {
+            console.log('Account changed: ' + account.address);
+            setUser(account.address ?? '');
+            LocalStorage.setPrefix(account.address);
+
+            if (loadToken()) {
+                login().catch((e) => {
+                    console.error(e);
+                })
+            }
+        }
+    }, [account.address, account.isConnected]);
 
     useEffect(() => {
         if (user && user != account.address) {
@@ -72,6 +82,7 @@ function MyApiProvider(param: Param) {
     }, [account.address, account.isDisconnected]);
 
     async function login(): Promise<boolean> {
+        console.log("address: " + account.address);
         if (!account.isConnected) {
             console.log('Not connected');
             return false;
