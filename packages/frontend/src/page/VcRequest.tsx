@@ -345,33 +345,40 @@ function MyKey() {
         }, {minimalUnsignedCredential: vc, proofFormat: "EthereumEip712Signature2021"});
     }
 
-    async function createAndUploadKey() {
-        if (!isLogin) {
-            toast.info('Please login first');
-            return;
-        }
-        if (hasKey) {
-            toast.info('You already have a key');
-            if (!await api.getPk(user)) {
-                toast.info('Retrying re-uploading')
-                const pk = crypto.exportPk()
-                await api.uploadPk(user, pk!)
-            }
-            return;
-        }
-        await createKeyPair();
-        const pk = crypto.exportPk()
-        if (!pk) {
-            toast.error('Failed to create key pair')
-            return
-        }
+    async function uploadPk(user: string, pk: string) {
         const pkVcResult = await requestPkVc(user, pk);
         if (!pkVcResult.success) {
             console.error("Failed to generate public key vc")
             toast.error("Failed to generate public key vc")
             return;
         }
+        console.log(JSON.stringify(pkVcResult.data))
         await api.uploadPk(user, pk, pkVcResult.data)
+    }
+
+    async function createAndUploadKey() {
+        if (!isLogin) {
+            toast.info('Please login first');
+            return;
+        }
+
+        if (hasKey) {
+            toast.info('Re-uploading public key')
+            const pk = crypto.exportPk()
+            if (!pk) {
+                toast.error('Failed to export key')
+                return;
+            }
+            await uploadPk(user, pk);
+        } else {
+            await createKeyPair();
+            const pk = crypto.exportPk();
+            if (!pk) {
+                toast.error('Failed to create key pair')
+                return
+            }
+            await uploadPk(user, pk);
+        }
     }
 
     return (

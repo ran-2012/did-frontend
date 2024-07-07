@@ -1,4 +1,5 @@
 import {CredentialSubject, UnsignedCredential, VerifiableCredential} from "@veramo/core";
+import {MinimalUnsignedCredential} from "@blockchain-lab-um/masca-connector";
 
 function convertKvList(list: Array<{ key: string, value: string }>) {
     const map: Map<string, string> = new Map()
@@ -53,10 +54,9 @@ function createTestCredential(list: Array<{ key: string, value: string }>) {
     };
 }
 
-export function generatePkVc(user: string, pk: string): UnsignedCredential {
+export function generatePkVc(user: string, pk: string): MinimalUnsignedCredential {
     const issuer = getDid(user);
     return {
-        issuer,
         issuanceDate: new Date().toISOString(),
         type: ['VerifiableCredential', 'PublicKeyCredential'],
         credentialSubject: {
